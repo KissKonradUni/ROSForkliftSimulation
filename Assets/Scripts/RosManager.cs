@@ -55,13 +55,13 @@ public class RosManager : MonoBehaviour
     };
     private static readonly Dictionary<string, MessageInstance> RosListeners = new()
     {
-        {"rosToUnityMotorSpeed", new MessageInstance(RosMessageType.Float32, msg => {
+        {RosChannels.Listeners.RosToUnityMotorSpeed, new MessageInstance(RosMessageType.Float32, msg => {
             _forklift.motorSpeed = Mathf.Clamp(((Float32Msg)msg).data, -1.0f, 1.0f);
         })},
-        {"rosToUnityRotationSpeed", new MessageInstance(RosMessageType.Float32, msg => {
+        {RosChannels.Listeners.RosToUnityRotationSpeed, new MessageInstance(RosMessageType.Float32, msg => {
             _forklift.rotationSpeed = Mathf.Clamp(((Float32Msg)msg).data, -1.0f, 1.0f);
         })},
-        {"rosToUnityForkSpeed", new MessageInstance(RosMessageType.Float32, msg => {
+        {RosChannels.Listeners.RosToUnityForkSpeed, new MessageInstance(RosMessageType.Float32, msg => {
             _forklift.forkSpeed = Mathf.Clamp(((Float32Msg)msg).data, -1.0f, 1.0f);
         })},
     };
@@ -213,7 +213,7 @@ public class RosManager : MonoBehaviour
     
     public void Publish(string messageName, float value)
     {
-        MessageInstance instance = RosPublishers[messageName];
+        var instance = RosPublishers[messageName];
         if (ReferenceEquals(instance, null))
         {
             Debug.LogError($"The publisher named \"{messageName}\" was not found!");
@@ -238,7 +238,7 @@ public class RosManager : MonoBehaviour
     
     public void Publish(string messageName, Vector3 value)
     {
-        MessageInstance instance = RosPublishers[messageName];
+        var instance = RosPublishers[messageName];
         if (ReferenceEquals(instance, null))
         {
             Debug.LogError($"The publisher named \"{messageName}\" was not found!");
@@ -249,7 +249,11 @@ public class RosManager : MonoBehaviour
         {
             if (_testMode)
             {
-                testServer.Listeners[messageName] = value.ToString("F3");
+                if (messageName.Contains("sensor"))
+                {
+                    testServer.Listeners[messageName] = $"C {value.x} {value.y} {value.z}";    
+                } else
+                    testServer.Listeners[messageName] = value.ToString("F3");
                 return;
             }
             
@@ -266,7 +270,7 @@ public class RosManager : MonoBehaviour
     
     public void Publish(string messageName, Transform value)
     {
-        MessageInstance instance = RosPublishers[messageName];
+        var instance = RosPublishers[messageName];
         if (ReferenceEquals(instance, null))
         {
             Debug.LogError($"The publisher named \"{messageName}\" was not found!");
@@ -304,11 +308,11 @@ public class RosManager : MonoBehaviour
     {
         switch (sensor.type)
         {
-            case SensorType.distance:
+            case SensorType.Distance:
                 RosPublishers.Add("sensor" + id, new MessageInstance(RosMessageType.Float32));
                 _connection.RegisterPublisher<Float32Msg>("sensor" + id);
                 break;
-            case SensorType.color:
+            case SensorType.Color:
                 RosPublishers.Add("sensor" + id, new MessageInstance(RosMessageType.Vector3));
                 _connection.RegisterPublisher<Vector3Msg>("sensor" + id);
                 break;

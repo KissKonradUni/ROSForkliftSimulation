@@ -35,7 +35,17 @@ public class RosTestServerEditor : Editor
         {
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField(listener.Key);
-            EditorGUILayout.LabelField(listener.Value);
+
+            if (listener.Key.Contains("sensor") && listener.Value.StartsWith("C"))
+            {
+                var split = listener.Value.Split(" ");
+                var color = new Color(float.Parse(split[1]), float.Parse(split[2]), float.Parse(split[3]));
+                //GUI.enabled = false;
+                EditorGUILayout.ColorField(color);
+                GUI.enabled = true;
+            } else
+                EditorGUILayout.LabelField(listener.Value);
+            
             EditorGUILayout.EndHorizontal();   
         }
         
