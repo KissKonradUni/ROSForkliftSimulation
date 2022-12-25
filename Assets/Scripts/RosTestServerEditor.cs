@@ -12,6 +12,7 @@ public class RosTestServerEditor : Editor
     private Vector3 _sendValueRotation;
     private bool _buttonLastState;
     private bool _active = true, _lastActive = true;
+    private bool _manual = true, _lastManual = true;
     
     public override void OnInspectorGUI()
     {
@@ -27,6 +28,12 @@ public class RosTestServerEditor : Editor
             _lastActive = _active;
         }
         GUI.enabled = true;
+        _manual = EditorGUILayout.Toggle("Manual: ", _manual);
+        if (_manual != _lastManual)
+        {
+            _targetComponent.manualDriving = _manual;
+            _lastManual = _manual;
+        }
 
         EditorGUILayout.Space(2);
         EditorGUILayout.LabelField("Listeners: ", EditorStyles.boldLabel);

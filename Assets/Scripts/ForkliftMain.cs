@@ -27,6 +27,9 @@ public class ForkliftMain : MonoBehaviour
     private float _forkPos;
     private Rigidbody _rb;
 
+    private Vector3 _lastMoveVector;
+    private Transform _hiddenTransform;
+    
     void Start()
     {
         _manager = RosManager.GetInstance();
@@ -41,18 +44,31 @@ public class ForkliftMain : MonoBehaviour
         _forkEndPosition = _forkStartPosition + new Vector3(0, forkRange.y - forkRange.x, 0);
 
         _rb = GetComponent<Rigidbody>();
-        _rb.centerOfMass = new Vector3(0.0f, 0.5f, 0.0f);
+        _rb.centerOfMass = new Vector3(0.0f, 0.1f, 0.0f);
     }
     
     void FixedUpdate()
     {
         _manager.Publish(RosChannels.Publishers.UnityToRosTransform, transform);
         _manager.Publish(RosChannels.Publishers.UnityToRosForkHeight, fork.transform.position.y - _forkStartPosition.y);
+        
+        var angle = Mathf.Atan(rotationSpeed);
+        var frontalSpeed = 1.0f - Mathf.Abs(rotationSpeed) * 0.66f;
+        
+        /* Old movement code not reacting to physics updates */
+        //transform.RotateAround(rotationPoint.position, Vector3.up, angle * motorSpeed * motorMaxSpeed);
+        //transform.Translate(Vector3.forward * (frontalSpeed * motorSpeed * motorMaxSpeed * Time.fixedDeltaTime), Space.Self);
+        
+        /* New moment code, that breaks the fork/box interactions sadly */
+        _hiddenTransform = transform;
+        _hiddenTransform.RotateAround(rotationPoint.position, Vector3.up, angle * motorSpeed * motorMaxSpeed);
+        _rb.MoveRotation(_hiddenTransform.rotation);
+        
+        _lastMoveVector = transform.localToWorldMatrix.MultiplyVector(Vector3.forward) * (frontalSpeed * motorSpeed * motorMaxSpeed);
+        if (_rb.velocity.magnitude <= motorMaxSpeed)
+            _rb.velocity += _lastMoveVector;
 
-        var sideDifference = rotationSpeed * motorSpeed;
-        transform.RotateAround(rotationPoint.position, Vector3.up, sideDifference);
-        transform.Translate(Vector3.forward * (motorSpeed * motorMaxSpeed * Time.fixedDeltaTime), Space.Self);
-
+        // The fork movement code is still translation based, may pass through shelves.
         _forkPos = Mathf.Clamp(_forkPos + forkSpeed * forkMaxSpeed * Time.fixedDeltaTime, forkRange.x, forkRange.y);
         var position = transform.position;
         fork.transform.localPosition = Vector3.Lerp(_forkStartPosition, _forkEndPosition, _forkPos / (forkRange.y - forkRange.x));
@@ -83,5 +99,7 @@ public class ForkliftMain : MonoBehaviour
         Gizmos.DrawCube(position + _forkStartPosition, Vector3.one * 0.1f);
         Gizmos.DrawCube(position + _forkEndPosition  , Vector3.one * 0.1f);
         Gizmos.DrawLine(position + _forkStartPosition, position + _forkEndPosition);
+        
+        Gizmos.DrawLine(position + new Vector3(0, 0.5f, 0), position + _lastMoveVector.normalized * 2.5f + new Vector3(0, 0.5f, 0));
     }
 }

@@ -40,6 +40,7 @@ public class Sensor : MonoBehaviour
         _camera = cameraGameObject.AddComponent<Camera>();
         _camera.backgroundColor = Color.clear;
         _camera.clearFlags = CameraClearFlags.SolidColor;
+        _camera.nearClipPlane = 0.01f;
         _camera.farClipPlane = range;
         _camera.targetTexture = _localTexture;
         _camera.cullingMask = layerMask;
