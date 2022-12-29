@@ -500,8 +500,8 @@ GameObject:
   m_Component:
   - component: {fileID: 8484820824584824131}
   - component: {fileID: 8235565193926864273}
-  - component: {fileID: 8235565193926864272}
   - component: {fileID: 919132149197923449}
+  - component: {fileID: 9023222305581668644}
   m_Layer: 6
   m_Name: Box
   m_TagString: Untagged
@@ -545,20 +545,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &8235565193926864272
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9118649298736087033}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fbbedf5910794c67d9f895690fdf564f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  forkliftLayer: 3
-  attachCollider: {fileID: 919132149197923449}
 --- !u!65 &919132149197923449
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -570,5 +556,18 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.9, y: 0.05, z: 0.9}
-  m_Center: {x: 0, y: 0.125, z: 0}
+  m_Size: {x: 0.9, y: 0.1, z: 0.9}
+  m_Center: {x: 0, y: 0.15, z: 0}
+--- !u!114 &9023222305581668644
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9118649298736087033}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63133f97915d0abee9a38407578b68c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  floorLayer: 7
