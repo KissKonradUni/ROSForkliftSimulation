@@ -1,4 +1,5 @@
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [SelectionBase]
@@ -19,10 +20,16 @@ public class ForkliftMain : MonoBehaviour
     public float forkSpeed;
 
     [Header("Fork detector")]
-    public Vector3 forkDetectorPos    = Vector3.zero;
-    public Vector3 forkDetectorSize   = Vector3.one ;
-    public Vector3 forkDetectorOffset = Vector3.zero;
+    public Vector3 forkDetectorPos       = Vector3.zero;
+    public Vector3 forkDetectorSize      = Vector3.one ;
+    public Vector3 forkDetectorOffset    = Vector3.zero;
+
+    [Header("Fork detector with a box")] 
+    public Vector3 forkDetectorBoxSize   = Vector3.one;
+    public Vector3 forkDetectorBoxOffset = Vector3.zero;
     public LayerMask forkDetectorLayerMask;
+    public int boxLayer = 6;
+    public int liftedBoxLayer = 10;
     
     [Header("Ground check")]
     public Vector3 groundCheckPos = Vector3.zero;
@@ -33,6 +40,7 @@ public class ForkliftMain : MonoBehaviour
     public Transform rotationPoint;
     [Space(2)]
     public GameObject fork;
+    public GameObject fakeBoxCollider;
     public Sensor[] sensors;
 
     private RosManager _manager;
@@ -40,7 +48,6 @@ public class ForkliftMain : MonoBehaviour
     private Vector3 _forkStartPosition;
     private Vector3 _forkEndPosition;
     private float _forkPos;
-    private RaycastHit _hitInfo;
     private Rigidbody _rb;
 
     private Vector3 _lastMoveVector;
@@ -97,8 +104,15 @@ public class ForkliftMain : MonoBehaviour
         // Fork hack
         if (_isLifting)
         {
-            _liftedBox.transform.localPosition = _relativeBoxPos;
+            var liftedBoxTransform = _liftedBox.transform;
+            liftedBoxTransform.localPosition = _relativeBoxPos;
             _liftedBox.velocity = Vector3.zero;
+            _liftedBox.angularVelocity = Vector3.zero;
+            
+            // Physics hackery
+            var fakeBoxTransform = fakeBoxCollider.transform;
+            fakeBoxTransform.localPosition = liftedBoxTransform.localPosition;
+            fakeBoxTransform.rotation = liftedBoxTransform.rotation;
         }
 
         /* Old movement code not reacting to physics updates */
@@ -131,12 +145,15 @@ public class ForkliftMain : MonoBehaviour
         
         _tempPos = Mathf.Clamp(_forkPos + forkSpeed * forkMaxSpeed * Time.fixedDeltaTime, forkRange.x, forkRange.y);
         _newForkPos = Vector3.Lerp(_forkStartPosition, _forkEndPosition, _forkPos / (forkRange.y - forkRange.x));
-        var count = Physics.OverlapBoxNonAlloc(_hiddenTransform.localToWorldMatrix.MultiplyPoint(_newForkPos + forkDetectorPos + forkDetectorOffset * forkSpeed), forkDetectorSize, _results, transform.rotation, forkDetectorLayerMask);
+        var boxMode = _isLifting && forkSpeed > 0;
+        var count = Physics.OverlapBoxNonAlloc(
+            _hiddenTransform.localToWorldMatrix.MultiplyPoint(_newForkPos + forkDetectorPos + (boxMode ? forkDetectorBoxOffset : forkDetectorOffset) * forkSpeed),
+            boxMode ? forkDetectorBoxSize : forkDetectorSize, _results, transform.rotation, forkDetectorLayerMask);
         _stop = false;
         for (var i = 0; i < count; i++)
             if (!_results[i].isTrigger)
                 _stop = true;
-        
+
         if (_stop) return;
         
         _forkPos = _tempPos;
@@ -178,17 +195,28 @@ public class ForkliftMain : MonoBehaviour
         Gizmos.DrawWireCube(forkLocalPos + forkDetectorPos + forkDetectorOffset, forkDetectorSize * 2.0f);
         Gizmos.DrawWireCube(forkLocalPos + forkDetectorPos - forkDetectorOffset, forkDetectorSize * 2.0f);
         
+        Gizmos.color = new Color(0.33f, 0.0f, 0.66f);
+        Gizmos.DrawWireCube(forkLocalPos + forkDetectorPos + forkDetectorBoxOffset, forkDetectorBoxSize * 2.0f);
+        
         Gizmos.color = Color.blue;
         Gizmos.DrawCube(groundCheckPos, groundCheckSize * 2.0f);
     }
 
     private void SetBox(Rigidbody obj)
     {
+        if (_liftedBox != null)
+            SetLayerRecursively(_liftedBox.gameObject, boxLayer);    
+        
         _isLifting = obj != null;
         _liftedBox = obj;
 
         if (_isLifting)
+        {
             _relativeBoxPos = obj.transform.localPosition;
+            SetLayerRecursively(_liftedBox.gameObject, liftedBoxLayer);
+        }
+
+        fakeBoxCollider.SetActive(_isLifting);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -231,5 +259,24 @@ public class ForkliftMain : MonoBehaviour
         
         _liftedBox.transform.SetParent(null);
         SetBox(null);
+    }
+
+    private static void SetLayerRecursively(GameObject obj, int newLayer)
+    {
+        if (null == obj)
+        {
+            return;
+        }
+           
+        obj.layer = newLayer;
+           
+        foreach (Transform child in obj.transform)
+        {
+            if (null == child)
+            {
+                continue;
+            }
+            SetLayerRecursively(child.gameObject, newLayer);
+        }
     }
 }

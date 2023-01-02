@@ -1,5 +1,50 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1731040374
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1731040375}
+  - component: {fileID: 1731040376}
+  m_Layer: 9
+  m_Name: BoxCollider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &1731040375
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1731040374}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 689133628190291297}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1731040376
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1731040374}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.05, y: 0.5, z: 1.05}
+  m_Center: {x: 0, y: 0.75, z: 0}
 --- !u!1 &828957618259564880
 GameObject:
   m_ObjectHideFlags: 0
@@ -632,7 +677,7 @@ MonoBehaviour:
   range: 5
   layerMask:
     serializedVersion: 2
-    m_Bits: 503
+    m_Bits: 2039
 --- !u!1 &4794797626991124720
 GameObject:
   m_ObjectHideFlags: 0
@@ -765,7 +810,7 @@ MonoBehaviour:
   range: 3
   layerMask:
     serializedVersion: 2
-    m_Bits: 503
+    m_Bits: 2039
 --- !u!1 &4794797627135418990
 GameObject:
   m_ObjectHideFlags: 0
@@ -814,7 +859,7 @@ MonoBehaviour:
   range: 5
   layerMask:
     serializedVersion: 2
-    m_Bits: 503
+    m_Bits: 2039
 --- !u!1 &4794797627155886525
 GameObject:
   m_ObjectHideFlags: 0
@@ -934,14 +979,18 @@ MonoBehaviour:
   forkMaxSpeed: 1
   motorSpeed: 0
   rotationSpeed: 0
-  forkRange: {x: 0, y: 4}
+  forkRange: {x: 0, y: 5}
   forkSpeed: 0
   forkDetectorPos: {x: 0, y: 0.015, z: 0.03}
   forkDetectorSize: {x: 0.34, y: 0.005, z: 0.5}
   forkDetectorOffset: {x: 0, y: 0.0175, z: 0}
+  forkDetectorBoxSize: {x: 0.5, y: 0.055, z: 0.5}
+  forkDetectorBoxOffset: {x: 0, y: 0.86, z: 0}
   forkDetectorLayerMask:
     serializedVersion: 2
     m_Bits: 256
+  boxLayer: 6
+  liftedBoxLayer: 10
   groundCheckPos: {x: 0, y: 0, z: 0}
   groundCheckSize: {x: 0.33, y: 0.05, z: 0.33}
   groundLayer:
@@ -949,6 +998,7 @@ MonoBehaviour:
     m_Bits: 128
   rotationPoint: {fileID: 4794797627155886524}
   fork: {fileID: 8401901592620341129}
+  fakeBoxCollider: {fileID: 1731040374}
   sensors:
   - {fileID: 4794797626974168530}
   - {fileID: 4794797627135418993}
@@ -996,7 +1046,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6187458658011418309}
   m_LocalRotation: {x: -0, y: -0.7071068, z: -0.7071068, w: 0}
-  m_LocalPosition: {x: 0, y: 0.5, z: 1.75}
+  m_LocalPosition: {x: 0, y: 0.5, z: 2.2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1401,6 +1451,7 @@ Transform:
   - {fileID: 2507504633590974105}
   - {fileID: 3644634366197795629}
   - {fileID: 4794797627081369853}
+  - {fileID: 1731040375}
   m_Father: {fileID: 4794797627658089805}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
