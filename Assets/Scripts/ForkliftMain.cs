@@ -164,6 +164,7 @@ public class ForkliftMain : MonoBehaviour
         _tempPos = Mathf.Clamp(_forkPos + forkSpeed * forkMaxSpeed * Time.fixedDeltaTime, forkRange.x, forkRange.y);
         _newForkPos = Vector3.Lerp(_forkStartPosition, _forkEndPosition, _forkPos / (forkRange.y - forkRange.x));
         var boxMode = _isLifting && forkSpeed > 0;
+        Debug.Log(boxMode);
         var count = Physics.OverlapBoxNonAlloc(
             _hiddenTransform.localToWorldMatrix.MultiplyPoint(_newForkPos + forkDetectorPos + (boxMode ? forkDetectorBoxOffset : forkDetectorOffset) * forkSpeed),
             boxMode ? forkDetectorBoxSize : forkDetectorSize, _results, transform.rotation, forkDetectorLayerMask);
@@ -223,6 +224,7 @@ public class ForkliftMain : MonoBehaviour
         Gizmos.DrawCube(groundCheckPos, groundCheckSize * 2.0f);
     }
 
+    private bool _justLifted = false; 
     /// <summary>
     /// The function used to set the box being lifted.
     /// If "null" is provided as the box, that counts as putting it down.
@@ -230,6 +232,12 @@ public class ForkliftMain : MonoBehaviour
     /// <param name="obj">The rigidbody of the box being lifted.</param>
     private void SetBox(Rigidbody obj)
     {
+        if (_justLifted)
+        {
+            _justLifted = false;
+            return;
+        }
+
         if (_liftedBox != null)
             SetLayerRecursively(_liftedBox.gameObject, boxLayer);    
         
@@ -240,9 +248,10 @@ public class ForkliftMain : MonoBehaviour
         {
             _relativeBoxPos = obj.transform.localPosition;
             SetLayerRecursively(_liftedBox.gameObject, liftedBoxLayer);
+            _justLifted = true;
         }
 
-        fakeBoxCollider.SetActive(_isLifting);
+        fakeBoxCollider.SetActive(_isLifting || _justLifted);
     }
 
     private void OnTriggerEnter(Collider other)
