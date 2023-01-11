@@ -154,18 +154,18 @@ public class WarehouseGenerator : MonoBehaviour
                 var realX = isOddX ? ((shelfColumns - 1) / 2f - x + 0.5f) * 4.0f : (shelfColumns / 2f - x) * 4.0f;
                 Instantiate(shelf, new Vector3(realX, 0.0f, realY), Quaternion.Euler(0, -90, 0), shelvesTransform);
                 
-                //Instantiate(boxes[0], new Vector3(realX + 1.25f, 0.0f, realY), Quaternion.Euler(0, -90, 0), rootTransform);
-                //Instantiate(boxes[0], new Vector3(realX + 1.25f, 1.5f, realY), Quaternion.Euler(0, -90, 0), rootTransform);
-                //Instantiate(boxes[0], new Vector3(realX + 1.25f, 3.0f, realY), Quaternion.Euler(0, -90, 0), rootTransform);
-                //Instantiate(boxes[0], new Vector3(realX + 1.25f, 4.5f, realY), Quaternion.Euler(0, -90, 0), rootTransform);
-                //Instantiate(boxes[0], new Vector3(realX - 1.25f, 0.0f, realY), Quaternion.Euler(0, -90, 0), rootTransform);
-                //Instantiate(boxes[0], new Vector3(realX - 1.25f, 1.5f, realY), Quaternion.Euler(0, -90, 0), rootTransform);
-                //Instantiate(boxes[0], new Vector3(realX - 1.25f, 3.0f, realY), Quaternion.Euler(0, -90, 0), rootTransform);
-                //Instantiate(boxes[0], new Vector3(realX - 1.25f, 4.5f, realY), Quaternion.Euler(0, -90, 0), rootTransform);
-                //Instantiate(boxes[0], new Vector3(realX, 0.0f, realY), Quaternion.Euler(0, -90, 0), rootTransform);
-                //Instantiate(boxes[0], new Vector3(realX, 1.5f, realY), Quaternion.Euler(0, -90, 0), rootTransform);
-                //Instantiate(boxes[0], new Vector3(realX, 3.0f, realY), Quaternion.Euler(0, -90, 0), rootTransform);
-                //Instantiate(boxes[0], new Vector3(realX, 4.5f, realY), Quaternion.Euler(0, -90, 0), rootTransform);
+                Instantiate(boxes[0], new Vector3(realX + 1.25f, 0.0f, realY), Quaternion.Euler(0, -90, 0), rootTransform);
+                Instantiate(boxes[0], new Vector3(realX + 1.25f, 1.5f, realY), Quaternion.Euler(0, -90, 0), rootTransform);
+                Instantiate(boxes[0], new Vector3(realX + 1.25f, 3.0f, realY), Quaternion.Euler(0, -90, 0), rootTransform);
+                Instantiate(boxes[0], new Vector3(realX + 1.25f, 4.5f, realY), Quaternion.Euler(0, -90, 0), rootTransform);
+                Instantiate(boxes[0], new Vector3(realX - 1.25f, 0.0f, realY), Quaternion.Euler(0, -90, 0), rootTransform);
+                Instantiate(boxes[0], new Vector3(realX - 1.25f, 1.5f, realY), Quaternion.Euler(0, -90, 0), rootTransform);
+                Instantiate(boxes[0], new Vector3(realX - 1.25f, 3.0f, realY), Quaternion.Euler(0, -90, 0), rootTransform);
+                Instantiate(boxes[0], new Vector3(realX - 1.25f, 4.5f, realY), Quaternion.Euler(0, -90, 0), rootTransform);
+                Instantiate(boxes[0], new Vector3(realX, 0.0f, realY), Quaternion.Euler(0, -90, 0), rootTransform);
+                Instantiate(boxes[0], new Vector3(realX, 1.5f, realY), Quaternion.Euler(0, -90, 0), rootTransform);
+                Instantiate(boxes[0], new Vector3(realX, 3.0f, realY), Quaternion.Euler(0, -90, 0), rootTransform);
+                Instantiate(boxes[0], new Vector3(realX, 4.5f, realY), Quaternion.Euler(0, -90, 0), rootTransform);
             }
         }
 

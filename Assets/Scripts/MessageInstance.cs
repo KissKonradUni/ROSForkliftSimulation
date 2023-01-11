@@ -15,7 +15,7 @@ public class MessageInstance
         Message = type switch
         {
             RosMessageType.Float32   => new Float32Msg(),
-            RosMessageType.Vector3   => new Message(),
+            RosMessageType.Vector3   => new Vector3Msg(),
             RosMessageType.Transform => new TransformMsg(),
             _ => null
         };

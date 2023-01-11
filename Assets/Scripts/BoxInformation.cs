@@ -1,10 +1,11 @@
 using UnityEngine;
 
-public class BoxCollisionTest : MonoBehaviour
+public class BoxInformation : MonoBehaviour
 {
     private ForkliftMain _forklift;
     public int floorLayer = 7;
-
+    public Boxes.Types boxType;
+    
     private void Start()
     {
         _forklift = ForkliftMain.GetInstance();
