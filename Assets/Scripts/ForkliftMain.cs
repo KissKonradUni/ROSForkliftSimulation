@@ -164,7 +164,6 @@ public class ForkliftMain : MonoBehaviour
         _tempPos = Mathf.Clamp(_forkPos + forkSpeed * forkMaxSpeed * Time.fixedDeltaTime, forkRange.x, forkRange.y);
         _newForkPos = Vector3.Lerp(_forkStartPosition, _forkEndPosition, _forkPos / (forkRange.y - forkRange.x));
         var boxMode = _isLifting && forkSpeed > 0;
-        Debug.Log(boxMode);
         var count = Physics.OverlapBoxNonAlloc(
             _hiddenTransform.localToWorldMatrix.MultiplyPoint(_newForkPos + forkDetectorPos + (boxMode ? forkDetectorBoxOffset : forkDetectorOffset) * forkSpeed),
             boxMode ? forkDetectorBoxSize : forkDetectorSize, _results, transform.rotation, forkDetectorLayerMask);
