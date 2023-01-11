@@ -223,6 +223,7 @@ public class ForkliftMain : MonoBehaviour
         Gizmos.DrawCube(groundCheckPos, groundCheckSize * 2.0f);
     }
 
+    private bool _justLifted = false; 
     /// <summary>
     /// The function used to set the box being lifted.
     /// If "null" is provided as the box, that counts as putting it down.
@@ -230,6 +231,12 @@ public class ForkliftMain : MonoBehaviour
     /// <param name="obj">The rigidbody of the box being lifted.</param>
     private void SetBox(Rigidbody obj)
     {
+        if (_justLifted)
+        {
+            _justLifted = false;
+            return;
+        }
+
         if (_liftedBox != null)
             SetLayerRecursively(_liftedBox.gameObject, boxLayer);    
         
@@ -240,9 +247,10 @@ public class ForkliftMain : MonoBehaviour
         {
             _relativeBoxPos = obj.transform.localPosition;
             SetLayerRecursively(_liftedBox.gameObject, liftedBoxLayer);
+            _justLifted = true;
         }
 
-        fakeBoxCollider.SetActive(_isLifting);
+        fakeBoxCollider.SetActive(_isLifting || _justLifted);
     }
 
     private void OnTriggerEnter(Collider other)

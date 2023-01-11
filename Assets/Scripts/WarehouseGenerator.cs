@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 /// <summary>
 /// Basic enum handling the different game modes. Mostly used to change the generation properties.
@@ -22,7 +23,10 @@ public class WarehouseGenerator : MonoBehaviour
     public GameObject windowRoof;
     public GameObject shelf;
     public GameObject[] boxes;
-    [Header("Properties")]
+    public Material[] floorMats;
+    public GameObject quad;
+    [Header("Properties")] 
+    public int seed = -1;
     public JobType jobType;
     public Vector2 buildingSize = new Vector2(24, 48);
     
@@ -64,6 +68,22 @@ public class WarehouseGenerator : MonoBehaviour
     [HideInInspector] 
     public int[] zoneSizes = new int[Boxes.Consts.TypeCount + 1];
 
+    private readonly Vector3[] _boxPositions =
+    {
+        new(+1.25f, 0.0f, 0.0f),
+        new(+1.25f, 1.5f, 0.0f),
+        new(+1.25f, 3.0f, 0.0f),
+        new(+1.25f, 4.5f, 0.0f),
+        new(-1.25f, 0.0f, 0.0f),
+        new(-1.25f, 1.5f, 0.0f),
+        new(-1.25f, 3.0f, 0.0f),
+        new(-1.25f, 4.5f, 0.0f),
+        new(0.0f, 0.0f, 0.0f),
+        new(0.0f, 1.5f, 0.0f),
+        new(0.0f, 3.0f, 0.0f),
+        new(0.0f, 4.5f, 0.0f)
+    };
+    
     private void Awake()
     {
         GenerateRoom();
@@ -76,6 +96,9 @@ public class WarehouseGenerator : MonoBehaviour
     /// </summary>
     public void GenerateRoom()
     {
+        if (seed != -1)
+            Random.InitState(seed);
+        
         // Prepares some basic gameObjects to use for sorting the elements making up the warehouse.
         #region Preparations
 
@@ -144,29 +167,87 @@ public class WarehouseGenerator : MonoBehaviour
 
         // Generates the shelves using the prefab provided, which should be able to hold 4 rows and 3 columns.
         #region Shelves
+        
+        var colors = new int[shelfRows];
+        var index = 0;
+        var color = 0;
+        try
+        {
+            foreach (var zoneSize in zoneSizes)
+            {
+                var startIndex = index;
+                for (var i = index; i < startIndex + zoneSize; i++)
+                {
+                    colors[i] = color;
+                    index++;
+                }
+
+                color++;
+            }
+        }
+        catch (IndexOutOfRangeException)
+        {
+            Debug.LogWarning("Incorrectly setup zone sizes!");
+        }
 
         var isOddX = shelfColumns % 2 == 1;
+        var indY = 0;
         for (var y = shelfRows / -2.0f; y < shelfRows / 2.0f; y++)
         {
             var realY = (y + distanceBetweenShelves * y) + (1.0f + distanceBetweenShelves) * 0.5f;
+            var indX = 0;
             for (var x = 0.5f; x < shelfColumns; x++)
             {
+                var end = (indX == 0) ? -1 : (indX == shelfColumns - 1) ? 1 : 0;
                 var realX = isOddX ? ((shelfColumns - 1) / 2f - x + 0.5f) * 4.0f : (shelfColumns / 2f - x) * 4.0f;
-                Instantiate(shelf, new Vector3(realX, 0.0f, realY), Quaternion.Euler(0, -90, 0), shelvesTransform);
+                var shelfInstance = Instantiate(shelf, new Vector3(realX, 0.0f, realY), Quaternion.Euler(0, -90, 0), shelvesTransform);
+
+                if (end != 0)
+                {
+                    var q = Instantiate(quad, new Vector3(0.0f, 0.0f, 0.0f), Quaternion.Euler(90, 0, 0), shelfInstance.transform);
+                    q.transform.localPosition = new Vector3(0.0f, 0.01f, 3.0f * end);
+                    q.transform.localScale = new Vector3(0.5f, 1.0f + distanceBetweenShelves, 1.0f);
+                    q.GetComponent<MeshRenderer>().material = floorMats[colors[indY]];
+                }
+                var q2 = Instantiate(quad, new Vector3(0.0f, 0.0f, 0.0f), Quaternion.Euler(90, 0, 0), shelfInstance.transform);
+                q2.transform.localPosition = new Vector3(2.0f, 0.01f, 0.0f);
+                q2.transform.localScale = new Vector3(6.0f, 0.5f, 1.0f);
+                q2.GetComponent<MeshRenderer>().material = floorMats[colors[indY]];
+                var q3 = Instantiate(quad, new Vector3(0.0f, 0.0f, 0.0f), Quaternion.Euler(90, 0, 0), shelfInstance.transform);
+                q3.transform.localPosition = new Vector3(-2.0f, 0.01f, 0.0f);
+                q3.transform.localScale = new Vector3(6.0f, 0.5f, 1.0f);
+                q3.GetComponent<MeshRenderer>().material = floorMats[colors[indY]];
                 
-                Instantiate(boxes[0], new Vector3(realX + 1.25f, 0.0f, realY), Quaternion.Euler(0, -90, 0), rootTransform);
-                Instantiate(boxes[1], new Vector3(realX + 1.25f, 1.5f, realY), Quaternion.Euler(0, -90, 0), rootTransform);
-                Instantiate(boxes[2], new Vector3(realX + 1.25f, 3.0f, realY), Quaternion.Euler(0, -90, 0), rootTransform);
-                Instantiate(boxes[3], new Vector3(realX + 1.25f, 4.5f, realY), Quaternion.Euler(0, -90, 0), rootTransform);
-                Instantiate(boxes[0], new Vector3(realX - 1.25f, 0.0f, realY), Quaternion.Euler(0, -90, 0), rootTransform);
-                Instantiate(boxes[1], new Vector3(realX - 1.25f, 1.5f, realY), Quaternion.Euler(0, -90, 0), rootTransform);
-                Instantiate(boxes[2], new Vector3(realX - 1.25f, 3.0f, realY), Quaternion.Euler(0, -90, 0), rootTransform);
-                Instantiate(boxes[3], new Vector3(realX - 1.25f, 4.5f, realY), Quaternion.Euler(0, -90, 0), rootTransform);
-                Instantiate(boxes[0], new Vector3(realX, 0.0f, realY), Quaternion.Euler(0, -90, 0), rootTransform);
-                Instantiate(boxes[1], new Vector3(realX, 1.5f, realY), Quaternion.Euler(0, -90, 0), rootTransform);
-                Instantiate(boxes[2], new Vector3(realX, 3.0f, realY), Quaternion.Euler(0, -90, 0), rootTransform);
-                Instantiate(boxes[3], new Vector3(realX, 4.5f, realY), Quaternion.Euler(0, -90, 0), rootTransform);
+                indX++;
+
+                if (jobType == JobType.BoxSearching)
+                {
+                    if (colors[indY] == 0)
+                        continue;
+                    
+                    foreach (var boxPosition in _boxPositions)
+                    {
+                        if (boxWeights[colors[indY] - 1] > Random.value)
+                            Instantiate(boxes[colors[indY] - 1], new Vector3(realX - boxPosition.x, boxPosition.y, realY),
+                                Quaternion.Euler(0, -90, 0), shelvesTransform);
+                    }
+                }
+                else
+                {
+                    if (colors[indY] != 0)
+                        continue;
+                    
+                    foreach (var boxPosition in _boxPositions)
+                    {
+                        var rand = Mathf.RoundToInt(Random.value * 3.0f);
+                        if (boxWeights[rand] > Random.value)
+                            Instantiate(boxes[rand], new Vector3(realX - boxPosition.x, boxPosition.y, realY),
+                                Quaternion.Euler(0, -90, 0), shelvesTransform);
+                    }
+                }
             }
+
+            indY++;
         }
 
         #endregion
