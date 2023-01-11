@@ -8,8 +8,7 @@ public class MessageInstance
     public readonly RosMessageType MessageType;
     public readonly Message Message;
     public readonly Action<Message> ReceiveCallback;
-    public readonly RosDirection MessageDirection;
-    
+
     public MessageInstance(RosMessageType type, Action<Message> receiveCallback = null)
     {
         MessageType = type;
@@ -21,6 +20,5 @@ public class MessageInstance
             _ => null
         };
         ReceiveCallback = receiveCallback;
-        MessageDirection = receiveCallback == null ? RosDirection.Publisher : RosDirection.Listener;
     }
 }

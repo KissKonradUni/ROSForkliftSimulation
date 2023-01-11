@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 public enum SensorType
 {
@@ -51,9 +50,8 @@ public class Sensor : MonoBehaviour
         switch (type)
         {
             case SensorType.Distance:
-                RaycastHit hitInfo;
                 var trans = transform;
-                var success = Physics.Raycast(trans.position, trans.forward, out hitInfo, range, layerMask);
+                var success = Physics.Raycast(trans.position, trans.forward, out var hitInfo, range, layerMask);
                 _manager.Publish("sensor" + _id, success ? hitInfo.distance : -1.0f);
                 break;
             case SensorType.Color:
@@ -66,13 +64,12 @@ public class Sensor : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (type == SensorType.Color)
-        {
-            RenderTexture.active = _localTexture;
-            _texture2D.ReadPixels(new Rect(1, 1, 1, 1), 1, 1);
-            _texture2D.Apply();
-            _colorValue = _texture2D.GetPixel(1, 1);
-        }
+        if (type != SensorType.Color) return;
+        
+        RenderTexture.active = _localTexture;
+        _texture2D.ReadPixels(new Rect(1, 1, 1, 1), 1, 1);
+        _texture2D.Apply();
+        _colorValue = _texture2D.GetPixel(1, 1);
     }
 
     private void OnDrawGizmos()

@@ -1,6 +1,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// This class is purely used to test features in the editor.
+/// Shouldn't be used outside the editor environment.
+///
+/// (This "mock" server allows the user to control the motors using wasd controls, and qe for lifting the fork itself.)
+/// </summary>
 public class RosTestServer : MonoBehaviour
 {
     public readonly Dictionary<string, string> Listeners = new();

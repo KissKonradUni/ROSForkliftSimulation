@@ -1,7 +1,20 @@
-using System;
-using Unity.VisualScripting;
 using UnityEngine;
 
+/// <summary>
+/// The main class controlling the forklift.
+/// 
+/// Has a lot of extra code to manage the box's physics, the sole reason
+/// being that there is no real friction or joint rigidbodies within the
+/// unity engine that would allow me to control everything the way I wanted to.
+///
+/// Some constraints had led to solutions which disable the following options:
+/// - Lifting multiple boxes at the same time.
+/// - Totally falling over using the forklift.
+/// - The box being lifted is technically "glued" to the fork, while moving.
+///
+/// Apart from that the class simulates the movement as if it were done using
+/// wheels, and also test for collisions on the fork / lifted box.
+/// </summary>
 [SelectionBase]
 [RequireComponent(typeof(Rigidbody))]
 public class ForkliftMain : MonoBehaviour
@@ -60,6 +73,9 @@ public class ForkliftMain : MonoBehaviour
     private const int BoxLayer = 6;
     private const int ShelfLayer = 8;
 
+    /// <summary>
+    /// The class is managed as a singleton, so when starting it checks if there are multiple instances of it.
+    /// </summary>
     private void Awake()
     {
         if (_instance == null)
@@ -91,6 +107,9 @@ public class ForkliftMain : MonoBehaviour
     private float _angle, _frontalSpeed, _tempPos;
     private Vector3 _newForkPos;
     // ReSharper disable once FieldCanBeMadeReadOnly.Local
+    //
+    // ReSharper would like to make this variable local, however I do not want to
+    // reallocate the memory every loop.
     private Collider[] _results = new Collider[3];
     private bool _stop;
     private void FixedUpdate()
@@ -116,13 +135,12 @@ public class ForkliftMain : MonoBehaviour
         }
 
         /* Old movement code not reacting to physics updates */
-//        transform.RotateAround(rotationPoint.position, Vector3.up, angle * motorSpeed * motorMaxSpeed);
-//        transform.Translate(Vector3.forward * (frontalSpeed * motorSpeed * motorMaxSpeed * Time.fixedDeltaTime), Space.Self);
+            //transform.RotateAround(rotationPoint.position, Vector3.up, angle * motorSpeed * motorMaxSpeed);
+            //transform.Translate(Vector3.forward * (frontalSpeed * motorSpeed * motorMaxSpeed * Time.fixedDeltaTime), Space.Self);
         /* The fork movement code is still translation based, may pass through shelves. */
-//        _forkPos = Mathf.Clamp(_forkPos + forkSpeed * forkMaxSpeed * Time.fixedDeltaTime, forkRange.x, forkRange.y);
-//        fork.transform.localPosition = Vector3.Lerp(_forkStartPosition, _forkEndPosition, _forkPos / (forkRange.y - forkRange.x));
-
-        /* New moment code, that breaks the fork/box interactions sadly */
+            //_forkPos = Mathf.Clamp(_forkPos + forkSpeed * forkMaxSpeed * Time.fixedDeltaTime, forkRange.x, forkRange.y);
+            //fork.transform.localPosition = Vector3.Lerp(_forkStartPosition, _forkEndPosition, _forkPos / (forkRange.y - forkRange.x));
+            
         // No longer broken, but causes a slight drifting in an unknown direction (around 0.01 per frame while moving)
         // and also the lifting of boxes required some additional workarounds.
         if (OnGround())
@@ -160,6 +178,9 @@ public class ForkliftMain : MonoBehaviour
         fork.transform.localPosition = _newForkPos;
     }
 
+    /// <summary>
+    /// I liked to visualise a lot of extra colliders, checks that are not visible while running the simulation.
+    /// </summary>
     private void OnDrawGizmos()
     {
         if (rotationPoint != null)
@@ -202,6 +223,11 @@ public class ForkliftMain : MonoBehaviour
         Gizmos.DrawCube(groundCheckPos, groundCheckSize * 2.0f);
     }
 
+    /// <summary>
+    /// The function used to set the box being lifted.
+    /// If "null" is provided as the box, that counts as putting it down.
+    /// </summary>
+    /// <param name="obj">The rigidbody of the box being lifted.</param>
     private void SetBox(Rigidbody obj)
     {
         if (_liftedBox != null)
@@ -242,6 +268,11 @@ public class ForkliftMain : MonoBehaviour
         SetBox(null);
     }
 
+    /// <summary>
+    /// Checks whether the forklift is on the ground.
+    /// Mandatory for simulating the wheel movement.
+    /// </summary>
+    /// <returns>True - if it's on the ground.</returns>
     private bool OnGround()
     {
         var transformMatrix = transform.localToWorldMatrix;
