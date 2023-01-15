@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -37,17 +38,23 @@ public class ForkliftMain : MonoBehaviour
     public Vector3 forkDetectorSize      = Vector3.one ;
     public Vector3 forkDetectorOffset    = Vector3.zero;
 
-    [Header("Fork detector with a box")] 
-    public Vector3 forkDetectorBoxSize   = Vector3.one;
-    public Vector3 forkDetectorBoxOffset = Vector3.zero;
     public LayerMask forkDetectorLayerMask;
     public int boxLayer = 6;
     public int liftedBoxLayer = 10;
     
+    [Header("Fork detector with a box")] 
+    public Vector3 forkDetectorBoxSize   = Vector3.one;
+    public Vector3 forkDetectorBoxOffset = Vector3.zero;
+
     [Header("Ground check")]
     public Vector3 groundCheckPos = Vector3.zero;
     public Vector3 groundCheckSize = Vector3.one;
     public LayerMask groundLayer;
+
+    [Header("Box detector")] 
+    public Vector3 boxDetectorSize = Vector3.one;
+    public Vector3 boxDetectorPos = Vector3.zero;
+    public LayerMask boxDetectorMask;
     
     [Header("References")]
     public Transform rotationPoint;
@@ -121,7 +128,7 @@ public class ForkliftMain : MonoBehaviour
         _frontalSpeed = 1.0f - Mathf.Abs(rotationSpeed) * 0.66f;
 
         // Fork hack
-        if (_isLifting)
+        if (_isLifting && _liftedBox.transform.parent == fork.transform)
         {
             var liftedBoxTransform = _liftedBox.transform;
             liftedBoxTransform.localPosition = _relativeBoxPos;
@@ -172,6 +179,16 @@ public class ForkliftMain : MonoBehaviour
             if (!_results[i].isTrigger)
                 _stop = true;
 
+        if (forkSpeed < 0.0f)
+        {
+            var count2 = Physics.OverlapBoxNonAlloc(
+                _hiddenTransform.localToWorldMatrix.MultiplyPoint(_newForkPos + boxDetectorPos),
+                boxDetectorSize, _results, transform.rotation, boxDetectorMask);
+            for (var i = 0; i < count2; i++)
+                if (!_results[i].isTrigger)
+                    _stop = true;
+        }
+
         if (_stop) return;
         
         _forkPos = _tempPos;
@@ -218,6 +235,7 @@ public class ForkliftMain : MonoBehaviour
         
         Gizmos.color = new Color(0.33f, 0.0f, 0.66f);
         Gizmos.DrawWireCube(forkLocalPos + forkDetectorPos + forkDetectorBoxOffset, forkDetectorBoxSize * 2.0f);
+        Gizmos.DrawWireCube(forkLocalPos + boxDetectorPos, boxDetectorSize * 2.0f);
         
         Gizmos.color = Color.blue;
         Gizmos.DrawCube(groundCheckPos, groundCheckSize * 2.0f);
@@ -258,6 +276,10 @@ public class ForkliftMain : MonoBehaviour
         switch (other.gameObject.layer)
         {
             case BoxLayer:
+                var difference = Vector3.Dot(other.transform.up, Vector3.up);
+                if (Math.Abs(difference - 1.0) > 0.1f)
+                    return;
+                
                 other.transform.SetParent(fork.transform);
                 SetBox(other.attachedRigidbody);
                 break;
