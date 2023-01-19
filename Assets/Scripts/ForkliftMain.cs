@@ -80,6 +80,11 @@ public class ForkliftMain : MonoBehaviour
     private const int BoxLayer = 6;
     private const int ShelfLayer = 8;
 
+    private Vector3 _prevPos;
+
+    [HideInInspector] 
+    public float DistanceTravelled;
+    
     /// <summary>
     /// The class is managed as a singleton, so when starting it checks if there are multiple instances of it.
     /// </summary>
@@ -109,6 +114,8 @@ public class ForkliftMain : MonoBehaviour
 
         _rb = GetComponent<Rigidbody>();
         _rb.centerOfMass = new Vector3(0.0f, 0.1f, 0.0f);
+
+        _prevPos = transform.position;
     }
 
     private float _angle, _frontalSpeed, _tempPos;
@@ -123,6 +130,9 @@ public class ForkliftMain : MonoBehaviour
     {
         _manager.Publish(RosChannels.Publishers.UnityToRosTransform, transform);
         _manager.Publish(RosChannels.Publishers.UnityToRosForkHeight, fork.transform.position.y - _forkStartPosition.y);
+
+        _hiddenTransform = transform;
+        DistanceTravelled += (_prevPos - _hiddenTransform.position).magnitude;
 
         _angle = Mathf.Atan(rotationSpeed);
         _frontalSpeed = 1.0f - Mathf.Abs(rotationSpeed) * 0.66f;
@@ -152,7 +162,6 @@ public class ForkliftMain : MonoBehaviour
         // and also the lifting of boxes required some additional workarounds.
         if (OnGround())
         {
-            _hiddenTransform = transform;
             _hiddenTransform.RotateAround(rotationPoint.position, Vector3.up, _angle * motorSpeed * motorMaxSpeed);
             if (Mathf.Abs(rotationSpeed) > 0.01f)
                 _rb.MoveRotation(_hiddenTransform.rotation);
@@ -165,6 +174,8 @@ public class ForkliftMain : MonoBehaviour
                 _rb.velocity = (_rb.velocity + _lastMoveVector).normalized * motorMaxSpeed;
         }
 
+        _prevPos = transform.position;
+        
         // New fork movement code checking for collisions.
         if (forkSpeed == 0) return;
         
