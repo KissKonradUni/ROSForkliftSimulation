@@ -43,8 +43,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1.05, y: 0.5, z: 1.05}
-  m_Center: {x: 0, y: 0.75, z: 0}
+  m_Size: {x: 1.05, y: 1, z: 1.05}
+  m_Center: {x: 0, y: 0.5, z: 0}
 --- !u!1 &828957618259564880
 GameObject:
   m_ObjectHideFlags: 0
@@ -1415,3 +1415,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   floorLayer: 7
+  boxType: 0

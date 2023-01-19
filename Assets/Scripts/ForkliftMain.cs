@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -37,17 +38,23 @@ public class ForkliftMain : MonoBehaviour
     public Vector3 forkDetectorSize      = Vector3.one ;
     public Vector3 forkDetectorOffset    = Vector3.zero;
 
-    [Header("Fork detector with a box")] 
-    public Vector3 forkDetectorBoxSize   = Vector3.one;
-    public Vector3 forkDetectorBoxOffset = Vector3.zero;
     public LayerMask forkDetectorLayerMask;
     public int boxLayer = 6;
     public int liftedBoxLayer = 10;
     
+    [Header("Fork detector with a box")] 
+    public Vector3 forkDetectorBoxSize   = Vector3.one;
+    public Vector3 forkDetectorBoxOffset = Vector3.zero;
+
     [Header("Ground check")]
     public Vector3 groundCheckPos = Vector3.zero;
     public Vector3 groundCheckSize = Vector3.one;
     public LayerMask groundLayer;
+
+    [Header("Box detector")] 
+    public Vector3 boxDetectorSize = Vector3.one;
+    public Vector3 boxDetectorPos = Vector3.zero;
+    public LayerMask boxDetectorMask;
     
     [Header("References")]
     public Transform rotationPoint;
@@ -73,6 +80,11 @@ public class ForkliftMain : MonoBehaviour
     private const int BoxLayer = 6;
     private const int ShelfLayer = 8;
 
+    private Vector3 _prevPos;
+
+    [HideInInspector] 
+    public float DistanceTravelled;
+    
     /// <summary>
     /// The class is managed as a singleton, so when starting it checks if there are multiple instances of it.
     /// </summary>
@@ -102,6 +114,8 @@ public class ForkliftMain : MonoBehaviour
 
         _rb = GetComponent<Rigidbody>();
         _rb.centerOfMass = new Vector3(0.0f, 0.1f, 0.0f);
+
+        _prevPos = transform.position;
     }
 
     private float _angle, _frontalSpeed, _tempPos;
@@ -117,11 +131,14 @@ public class ForkliftMain : MonoBehaviour
         _manager.Publish(RosChannels.Publishers.UnityToRosTransform, transform);
         _manager.Publish(RosChannels.Publishers.UnityToRosForkHeight, fork.transform.position.y - _forkStartPosition.y);
 
+        _hiddenTransform = transform;
+        DistanceTravelled += (_prevPos - _hiddenTransform.position).magnitude;
+
         _angle = Mathf.Atan(rotationSpeed);
         _frontalSpeed = 1.0f - Mathf.Abs(rotationSpeed) * 0.66f;
 
         // Fork hack
-        if (_isLifting)
+        if (_isLifting && _liftedBox.transform.parent == fork.transform)
         {
             var liftedBoxTransform = _liftedBox.transform;
             liftedBoxTransform.localPosition = _relativeBoxPos;
@@ -145,7 +162,6 @@ public class ForkliftMain : MonoBehaviour
         // and also the lifting of boxes required some additional workarounds.
         if (OnGround())
         {
-            _hiddenTransform = transform;
             _hiddenTransform.RotateAround(rotationPoint.position, Vector3.up, _angle * motorSpeed * motorMaxSpeed);
             if (Mathf.Abs(rotationSpeed) > 0.01f)
                 _rb.MoveRotation(_hiddenTransform.rotation);
@@ -158,6 +174,8 @@ public class ForkliftMain : MonoBehaviour
                 _rb.velocity = (_rb.velocity + _lastMoveVector).normalized * motorMaxSpeed;
         }
 
+        _prevPos = transform.position;
+        
         // New fork movement code checking for collisions.
         if (forkSpeed == 0) return;
         
@@ -171,6 +189,16 @@ public class ForkliftMain : MonoBehaviour
         for (var i = 0; i < count; i++)
             if (!_results[i].isTrigger)
                 _stop = true;
+
+        if (forkSpeed < 0.0f)
+        {
+            var count2 = Physics.OverlapBoxNonAlloc(
+                _hiddenTransform.localToWorldMatrix.MultiplyPoint(_newForkPos + boxDetectorPos),
+                boxDetectorSize, _results, transform.rotation, boxDetectorMask);
+            for (var i = 0; i < count2; i++)
+                if (!_results[i].isTrigger)
+                    _stop = true;
+        }
 
         if (_stop) return;
         
@@ -218,6 +246,7 @@ public class ForkliftMain : MonoBehaviour
         
         Gizmos.color = new Color(0.33f, 0.0f, 0.66f);
         Gizmos.DrawWireCube(forkLocalPos + forkDetectorPos + forkDetectorBoxOffset, forkDetectorBoxSize * 2.0f);
+        Gizmos.DrawWireCube(forkLocalPos + boxDetectorPos, boxDetectorSize * 2.0f);
         
         Gizmos.color = Color.blue;
         Gizmos.DrawCube(groundCheckPos, groundCheckSize * 2.0f);
@@ -258,6 +287,10 @@ public class ForkliftMain : MonoBehaviour
         switch (other.gameObject.layer)
         {
             case BoxLayer:
+                var difference = Vector3.Dot(other.transform.up, Vector3.up);
+                if (Math.Abs(difference - 1.0) > 0.1f)
+                    return;
+                
                 other.transform.SetParent(fork.transform);
                 SetBox(other.attachedRigidbody);
                 break;

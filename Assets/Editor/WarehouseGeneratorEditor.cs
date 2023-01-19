@@ -16,11 +16,13 @@ public class WarehouseGeneratorEditor : Editor
         if (!_foundInstance)
         {
             _warehouseGenerator = (WarehouseGenerator)target;
-            _foundInstance = true; 
+            _foundInstance = true;
         }
 
         base.OnInspectorGUI();
 
+        EditorGUI.BeginChangeCheck();
+        
         _warehouseGenerator.distanceBetweenShelves = (_warehouseGenerator.buildingSize.y - _warehouseGenerator.shelfRows) / (_warehouseGenerator.shelfRows + 1);
         _warehouseGenerator.distanceToWall = (_warehouseGenerator.buildingSize.x - _warehouseGenerator.shelfColumns * 4.0f) / 2.0f;
         
@@ -69,7 +71,12 @@ public class WarehouseGeneratorEditor : Editor
             }
         }
         EditorGUILayout.EndFoldoutHeaderGroup();
-        
+
+        if (EditorGUI.EndChangeCheck())
+        {
+            serializedObject.ApplyModifiedProperties();
+        }
+
         EditorGUILayout.Space(10.0f);
 
         if (GUILayout.Button("Generate"))
