@@ -931,18 +931,23 @@ MonoBehaviour:
   forkDetectorPos: {x: 0, y: 0.015, z: 0.03}
   forkDetectorSize: {x: 0.34, y: 0.005, z: 0.5}
   forkDetectorOffset: {x: 0, y: 0.0175, z: 0}
-  forkDetectorBoxSize: {x: 0.5, y: 0.055, z: 0.5}
-  forkDetectorBoxOffset: {x: 0, y: 0.86, z: 0}
   forkDetectorLayerMask:
     serializedVersion: 2
     m_Bits: 256
   boxLayer: 6
   liftedBoxLayer: 10
+  forkDetectorBoxSize: {x: 0.5, y: 0.055, z: 0.5}
+  forkDetectorBoxOffset: {x: 0, y: 0.86, z: 0}
   groundCheckPos: {x: 0, y: 0, z: 0}
   groundCheckSize: {x: 0.33, y: 0.05, z: 0.33}
   groundLayer:
     serializedVersion: 2
     m_Bits: 128
+  boxDetectorSize: {x: 0.1, y: 0.005, z: 0.33}
+  boxDetectorPos: {x: 0.25, y: -0.1025, z: 0}
+  boxDetectorMask:
+    serializedVersion: 2
+    m_Bits: 64
   rotationPoint: {fileID: 4794797627155886524}
   fork: {fileID: 8401901592620341129}
   fakeBoxCollider: {fileID: 1731040374}
@@ -950,6 +955,7 @@ MonoBehaviour:
   - {fileID: 4794797626974168530}
   - {fileID: 4794797627135418993}
   - {fileID: 4794797627081369852}
+  distanceTraveled: 0
 --- !u!54 &1101674702
 Rigidbody:
   m_ObjectHideFlags: 0

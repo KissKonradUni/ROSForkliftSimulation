@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using Boxes;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -28,6 +31,9 @@ public class WarehouseGenerator : MonoBehaviour
     [Header("Properties")] 
     public int seed = -1;
     public JobType jobType;
+    [Range(20, 100)]
+    public int searchPercent = 50;
+    public Vector3 timeLimit = new Vector3(0.0f, 15.0f, 0.0f);
     public Vector2 buildingSize = new Vector2(24, 48);
     
     public int shelfColumns = 3;
@@ -83,10 +89,18 @@ public class WarehouseGenerator : MonoBehaviour
         new(0.0f, 3.0f, 0.0f),
         new(0.0f, 4.5f, 0.0f)
     };
+
+    private readonly List<GameObject>[] _placedBoxes = new List<GameObject>[4];
+    
+    public readonly List<GameObject>[] JobBoxes = new List<GameObject>[4];
+    [HideInInspector]
+    public int[] correctlyPlacedBoxes = new int[4];
+    [HideInInspector]
+    public int misplacedBoxes = 0;
     
     private void Awake()
     {
-        GenerateRoom();
+        DontDestroyOnLoad(this);
     }
 
     /// <summary>
@@ -101,6 +115,21 @@ public class WarehouseGenerator : MonoBehaviour
         
         // Prepares some basic gameObjects to use for sorting the elements making up the warehouse.
         #region Preparations
+
+        for (var i = 0; i < 4; i++)
+        {
+            if (_placedBoxes[i] != null)
+                _placedBoxes[i].Clear();
+            else
+                _placedBoxes[i] = new List<GameObject>();
+        }
+        for (var i = 0; i < 4; i++)
+        {
+            if (JobBoxes[i] != null)
+                JobBoxes[i].Clear();
+            else
+                JobBoxes[i] = new List<GameObject>();
+        }
 
         var root = GameObject.Find("Warehouse");
         if (root != null)
@@ -201,6 +230,16 @@ public class WarehouseGenerator : MonoBehaviour
                 var end = (indX == 0) ? -1 : (indX == shelfColumns - 1) ? 1 : 0;
                 var realX = isOddX ? ((shelfColumns - 1) / 2f - x + 0.5f) * 4.0f : (shelfColumns / 2f - x) * 4.0f;
                 var shelfInstance = Instantiate(shelf, new Vector3(realX, 0.0f, realY), Quaternion.Euler(0, -90, 0), shelvesTransform);
+                var shelfZone = shelfInstance.GetComponent<ShelfZone>();
+                shelfZone.zoneType = colors[indY] switch
+                {
+                    0 => Zones.Mixed,
+                    1 => Zones.Blue,
+                    2 => Zones.Green,
+                    3 => Zones.Yellow,
+                    4 => Zones.Red,
+                    _ => shelfZone.zoneType
+                };
 
                 if (end != 0)
                 {
@@ -227,9 +266,12 @@ public class WarehouseGenerator : MonoBehaviour
                     
                     foreach (var boxPosition in _boxPositions)
                     {
-                        if (boxWeights[colors[indY] - 1] > Random.value)
-                            Instantiate(boxes[colors[indY] - 1], new Vector3(realX - boxPosition.x, boxPosition.y, realY),
-                                Quaternion.Euler(0, -90, 0), shelvesTransform);
+                        if (!(boxWeights[colors[indY] - 1] > Random.value)) continue;
+                        
+                        var box = Instantiate(boxes[colors[indY] - 1],
+                            new Vector3(realX - boxPosition.x, boxPosition.y, realY),
+                            Quaternion.Euler(0, -90, 0), shelvesTransform);
+                        _placedBoxes[colors[indY] - 1].Add(box);
                     }
                 }
                 else
@@ -240,14 +282,35 @@ public class WarehouseGenerator : MonoBehaviour
                     foreach (var boxPosition in _boxPositions)
                     {
                         var rand = Mathf.RoundToInt(Random.value * 3.0f);
-                        if (boxWeights[rand] > Random.value)
-                            Instantiate(boxes[rand], new Vector3(realX - boxPosition.x, boxPosition.y, realY),
-                                Quaternion.Euler(0, -90, 0), shelvesTransform);
+                        if (!(boxWeights[rand] > Random.value)) continue;
+                        
+                        Instantiate(boxes[rand], new Vector3(realX - boxPosition.x, boxPosition.y, realY),
+                            Quaternion.Euler(0, -90, 0), shelvesTransform);
                     }
                 }
             }
 
             indY++;
+        }
+
+        #endregion
+
+        #region Job
+
+        if (jobType == JobType.BoxSearching)
+        {
+            for (var i = 0; i < _placedBoxes.Length; i++)
+            {
+                var list = _placedBoxes[i];
+                foreach (var box in list.Where(box => Mathf.FloorToInt(Random.value * 100) < searchPercent))
+                {
+                    JobBoxes[i].Add(box);
+                }
+            }
+        }
+        else
+        {
+            //TODO: make this
         }
 
         #endregion

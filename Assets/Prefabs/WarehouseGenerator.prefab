@@ -1,0 +1,81 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4005782673810011283
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4005782673810011282}
+  - component: {fileID: 4005782673810011373}
+  m_Layer: 0
+  m_Name: WarehouseGenerator
+  m_TagString: Untagged
+  m_Icon: {fileID: 3936346786652291628, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4005782673810011282
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4005782673810011283}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 2.75, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4005782673810011373
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4005782673810011283}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa3cf5d7d29a4ac978ac1f07b3839e01, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wall: {fileID: 919132149155446097, guid: a1424c44f2abe3da39c6ed6033f6fd8c, type: 3}
+  cornerWall: {fileID: 919132149155446097, guid: 6364e5359181dfd7e9a42c326eb44d2e, type: 3}
+  roof: {fileID: 919132149155446097, guid: 4c42760d825ca3f339019c3e7747c6da, type: 3}
+  windowRoof: {fileID: 919132149155446097, guid: b02375ed2f1bfefba88974e3be4bf719, type: 3}
+  shelf: {fileID: 8743168033866612440, guid: 434c7a229f0e8ca9983d9c3dc4083520, type: 3}
+  boxes:
+  - {fileID: 420508971943600506, guid: 8647cc49551d9ea25af921cfa884de00, type: 3}
+  - {fileID: 3202017402031993480, guid: 091313765c9cb6d53983f3950bcb8871, type: 3}
+  - {fileID: 5653708486634136139, guid: 7cb58c0eef81312efa9bbfc48477ad12, type: 3}
+  - {fileID: 6598117366742021844, guid: 0075fc99c86d69da1b46d492e0b4daa9, type: 3}
+  floorMats:
+  - {fileID: 2100000, guid: a34825c95074c406691e8a25444971a5, type: 2}
+  - {fileID: 2100000, guid: e3b5f21e2377ea80e930e473b305bc52, type: 2}
+  - {fileID: 2100000, guid: 887e20cb88e930db3b73b37cb86cce81, type: 2}
+  - {fileID: 2100000, guid: 136aad0dfb33701f88db058fcfaec318, type: 2}
+  - {fileID: 2100000, guid: f11cce249332e670ca8eee2e9419372b, type: 2}
+  quad: {fileID: 6923210483485356578, guid: 8fa4e36c5b374f1ffacdbf336c176e21, type: 3}
+  seed: -1
+  jobType: 1
+  searchPercent: 20
+  timeLimit: {x: 0, y: 15, z: 0}
+  buildingSize: {x: 24, y: 44}
+  shelfColumns: 2
+  shelfRows: 4
+  distanceBetweenShelves: 8
+  distanceToWall: 8
+  boxTypes: 0101000000
+  boxWeights:
+  - 0.61
+  - 0.48
+  - 0
+  - 0
+  zoneSizes: 0200000001000000010000000000000000000000
+  correctlyPlacedBoxes: 
+  misplacedBoxes: 0

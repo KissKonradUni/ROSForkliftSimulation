@@ -83,7 +83,7 @@ public class ForkliftMain : MonoBehaviour
     private Vector3 _prevPos;
 
     [HideInInspector] 
-    public float DistanceTravelled;
+    public float distanceTraveled;
     
     /// <summary>
     /// The class is managed as a singleton, so when starting it checks if there are multiple instances of it.
@@ -132,7 +132,7 @@ public class ForkliftMain : MonoBehaviour
         _manager.Publish(RosChannels.Publishers.UnityToRosForkHeight, fork.transform.position.y - _forkStartPosition.y);
 
         _hiddenTransform = transform;
-        DistanceTravelled += (_prevPos - _hiddenTransform.position).magnitude;
+        distanceTraveled += (_prevPos - _hiddenTransform.position).magnitude;
 
         _angle = Mathf.Atan(rotationSpeed);
         _frontalSpeed = 1.0f - Mathf.Abs(rotationSpeed) * 0.66f;
