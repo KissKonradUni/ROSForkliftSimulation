@@ -34,10 +34,10 @@ public class ShelfZone : MonoBehaviour
     {
         if (_warehouseGenerator.generating) return;
         
-        if (_warehouseGenerator.jobType != JobType.BoxSorting) return;
+        if (WarehouseGenerator.JobType != JobType.BoxSorting) return;
         
-        if (!_warehouseGenerator.CorrectlyPlacedBoxes[(int)box.boxType].Contains(box.gameObject))
-            _warehouseGenerator.CorrectlyPlacedBoxes[(int)box.boxType].Add(box.gameObject);
+        if (!WarehouseGenerator.CorrectlyPlacedBoxes[(int)box.boxType].Contains(box.gameObject))
+            WarehouseGenerator.CorrectlyPlacedBoxes[(int)box.boxType].Add(box.gameObject);
     }
 
     public void AlertWrong(BoxInformation box)
@@ -51,13 +51,13 @@ public class ShelfZone : MonoBehaviour
     {
         if (_warehouseGenerator.generating) return;
         
-        if (_warehouseGenerator.jobType != JobType.BoxSearching) return;
+        if (WarehouseGenerator.JobType != JobType.BoxSearching) return;
 
-        if (_warehouseGenerator.JobBoxes[(int)box.boxType].Count >
-            _warehouseGenerator.CorrectlyPlacedBoxes[(int)box.boxType].Count)
+        if (WarehouseGenerator.JobBoxes[(int)box.boxType].Count >
+            WarehouseGenerator.CorrectlyPlacedBoxes[(int)box.boxType].Count)
         {
-            if (!_warehouseGenerator.CorrectlyPlacedBoxes[(int)box.boxType].Contains(box.gameObject))
-                _warehouseGenerator.CorrectlyPlacedBoxes[(int)box.boxType].Add(box.gameObject);
+            if (!WarehouseGenerator.CorrectlyPlacedBoxes[(int)box.boxType].Contains(box.gameObject))
+                WarehouseGenerator.CorrectlyPlacedBoxes[(int)box.boxType].Add(box.gameObject);
         }
         else
         {

@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Linq;
 using TMPro;
@@ -24,6 +23,8 @@ public class MainMenuManager : MonoBehaviour
     public TMP_Text highscoreScores;
     public Animator blackout;
     public string mainScene;
+    
+    private static readonly int FadeIn = Animator.StringToHash("FadeIn");
 
     public void StartGame()
     {
@@ -32,7 +33,7 @@ public class MainMenuManager : MonoBehaviour
 
     private IEnumerator LateStartGame()
     {
-        blackout.SetTrigger("FadeIn");
+        blackout.SetTrigger(FadeIn);
         yield return new WaitForSeconds(1.0f);
         SceneManager.LoadScene(mainScene);
     }
@@ -87,19 +88,19 @@ public class MainMenuManager : MonoBehaviour
 
     public void SeedSet(TMP_InputField input)
     {
-        if (!int.TryParse(input.text, out warehouseGenerator.seed))
-            warehouseGenerator.seed = -1;
+        if (!int.TryParse(input.text, out WarehouseGenerator.Seed))
+            WarehouseGenerator.Seed = -1;
     }
 
     public void JobTypeSet(TMP_Dropdown input)
     {
-        warehouseGenerator.jobType = (JobType)input.value;
+        WarehouseGenerator.JobType = (JobType)input.value;
     }
     
     public void RequirementSet(TMP_InputField input)
     {
-        warehouseGenerator.searchPercent = int.TryParse(input.text, out warehouseGenerator.searchPercent) ? 
-            Mathf.Clamp(warehouseGenerator.searchPercent, 20, 100) : 50;
+        WarehouseGenerator.SearchPercent = int.TryParse(input.text, out WarehouseGenerator.SearchPercent) ? 
+            Mathf.Clamp(WarehouseGenerator.SearchPercent, 20, 100) : 50;
     }
 
     public void HoursSet(TMP_InputField input)
@@ -122,7 +123,7 @@ public class MainMenuManager : MonoBehaviour
         if (!float.TryParse(input.text, out var val))
             val = @default;
         val = Mathf.Clamp(val, 0.0f, 60.0f);
-        warehouseGenerator.timeLimit[pos] = val;
+        WarehouseGenerator.TimeLimit[pos] = val;
     }
 
     public void SetWarehouseX(TMP_InputField input)
@@ -130,7 +131,7 @@ public class MainMenuManager : MonoBehaviour
         if (!float.TryParse(input.text, out var val))
             val = 24;
         val = Mathf.Clamp(val, 8, 100);
-        warehouseGenerator.buildingSize.x = val;
+        WarehouseGenerator.BuildingSize.x = val;
         
         CalculateDistance();
     }
@@ -140,7 +141,7 @@ public class MainMenuManager : MonoBehaviour
         if (!float.TryParse(input.text, out var val))
             val = 44;
         val = Mathf.Clamp(val, 8, 100);
-        warehouseGenerator.buildingSize.y = val;
+        WarehouseGenerator.BuildingSize.y = val;
         
         CalculateDistance();
     }
@@ -150,7 +151,7 @@ public class MainMenuManager : MonoBehaviour
         if (!int.TryParse(input.text, out var val))
             val = 2;
         val = Mathf.Clamp(val, 1, 100);
-        warehouseGenerator.shelfColumns = val;
+        WarehouseGenerator.ShelfColumns = val;
         
         CalculateDistance();
     }
@@ -160,36 +161,36 @@ public class MainMenuManager : MonoBehaviour
         if (!int.TryParse(input.text, out var val))
             val = 4;
         val = Mathf.Clamp(val, 1, 100);
-        warehouseGenerator.shelfRows = val;
+        WarehouseGenerator.ShelfRows = val;
         
         CalculateDistance();
     }
 
     private void CalculateDistance()
     {
-        warehouseGenerator.distanceBetweenShelves = (warehouseGenerator.buildingSize.y - warehouseGenerator.shelfRows) / (warehouseGenerator.shelfRows + 1);
-        warehouseGenerator.distanceToWall = (warehouseGenerator.buildingSize.x - warehouseGenerator.shelfColumns * 4.0f) / 2.0f;
-        shelfSizesText.text = $"{warehouseGenerator.distanceBetweenShelves:0.00} m\n{warehouseGenerator.distanceToWall:0.00} m";
+        WarehouseGenerator.DistanceBetweenShelves = (WarehouseGenerator.BuildingSize.y - WarehouseGenerator.ShelfRows) / (WarehouseGenerator.ShelfRows + 1);
+        WarehouseGenerator.DistanceToWall = (WarehouseGenerator.BuildingSize.x - WarehouseGenerator.ShelfColumns * 4.0f) / 2.0f;
+        shelfSizesText.text = $"{WarehouseGenerator.DistanceBetweenShelves:0.00} m\n{WarehouseGenerator.DistanceToWall:0.00} m";
     }
 
     public void SetToggleBlue(Toggle input)
     {
-        warehouseGenerator.boxTypes[0] = input.isOn;
+        WarehouseGenerator.BoxTypes[0] = input.isOn;
     }
     
     public void SetToggleGreen(Toggle input)
     {
-        warehouseGenerator.boxTypes[1] = input.isOn;
+        WarehouseGenerator.BoxTypes[1] = input.isOn;
     }
     
     public void SetToggleYellow(Toggle input)
     {
-        warehouseGenerator.boxTypes[2] = input.isOn;
+        WarehouseGenerator.BoxTypes[2] = input.isOn;
     }
     
     public void SetToggleRed(Toggle input)
     {
-        warehouseGenerator.boxTypes[3] = input.isOn;
+        WarehouseGenerator.BoxTypes[3] = input.isOn;
     }
 
     public void SetWeightBlue(TMP_InputField input)
@@ -197,7 +198,7 @@ public class MainMenuManager : MonoBehaviour
         if (!float.TryParse(input.text, out var val))
             val = 0.5f;
         val = Mathf.Clamp(val, 0.0f, 1.0f);
-        warehouseGenerator.boxWeights[0] = val;
+        WarehouseGenerator.BoxWeights[0] = val;
     }
     
     public void SetWeightGreen(TMP_InputField input)
@@ -205,7 +206,7 @@ public class MainMenuManager : MonoBehaviour
         if (!float.TryParse(input.text, out var val))
             val = 0.5f;
         val = Mathf.Clamp(val, 0.0f, 1.0f);
-        warehouseGenerator.boxWeights[1] = val;
+        WarehouseGenerator.BoxWeights[1] = val;
     }
     
     public void SetWeightYellow(TMP_InputField input)
@@ -213,7 +214,7 @@ public class MainMenuManager : MonoBehaviour
         if (!float.TryParse(input.text, out var val))
             val = 0.5f;
         val = Mathf.Clamp(val, 0.0f, 1.0f);
-        warehouseGenerator.boxWeights[2] = val;
+        WarehouseGenerator.BoxWeights[2] = val;
     }
     
     public void SetWeightRed(TMP_InputField input)
@@ -221,7 +222,7 @@ public class MainMenuManager : MonoBehaviour
         if (!float.TryParse(input.text, out var val))
             val = 0.5f;
         val = Mathf.Clamp(val, 0.0f, 1.0f);
-        warehouseGenerator.boxWeights[3] = val;
+        WarehouseGenerator.BoxWeights[3] = val;
     }
 
     public void SetZoneMixed(TMP_InputField input)
@@ -229,7 +230,7 @@ public class MainMenuManager : MonoBehaviour
         if (!int.TryParse(input.text, out var val))
             val = 1;
         val = Mathf.Clamp(val, 0, 999);
-        warehouseGenerator.zoneSizes[0] = val;
+        WarehouseGenerator.ZoneSizes[0] = val;
     }
     
     public void SetZoneBlue(TMP_InputField input)
@@ -237,7 +238,7 @@ public class MainMenuManager : MonoBehaviour
         if (!int.TryParse(input.text, out var val))
             val = 1;
         val = Mathf.Clamp(val, 0, 999);
-        warehouseGenerator.zoneSizes[1] = val;
+        WarehouseGenerator.ZoneSizes[1] = val;
     }
     
     public void SetZoneGreen(TMP_InputField input)
@@ -245,7 +246,7 @@ public class MainMenuManager : MonoBehaviour
         if (!int.TryParse(input.text, out var val))
             val = 1;
         val = Mathf.Clamp(val, 0, 999);
-        warehouseGenerator.zoneSizes[2] = val;
+        WarehouseGenerator.ZoneSizes[2] = val;
     }
     
     public void SetZoneYellow(TMP_InputField input)
@@ -253,7 +254,7 @@ public class MainMenuManager : MonoBehaviour
         if (!int.TryParse(input.text, out var val))
             val = 1;
         val = Mathf.Clamp(val, 0, 999);
-        warehouseGenerator.zoneSizes[3] = val;
+        WarehouseGenerator.ZoneSizes[3] = val;
     }
     
     public void SetZoneRed(TMP_InputField input)
@@ -261,6 +262,6 @@ public class MainMenuManager : MonoBehaviour
         if (!int.TryParse(input.text, out var val))
             val = 1;
         val = Mathf.Clamp(val, 0, 999);
-        warehouseGenerator.zoneSizes[4] = val;
+        WarehouseGenerator.ZoneSizes[4] = val;
     }
 }

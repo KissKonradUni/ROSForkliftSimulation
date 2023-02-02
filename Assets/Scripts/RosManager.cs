@@ -15,12 +15,6 @@ public enum RosMessageType
     Transform
 }
 
-public enum RosDirection
-{
-    Listener,
-    Publisher
-}
-
 #endregion
 
 namespace RosChannels
