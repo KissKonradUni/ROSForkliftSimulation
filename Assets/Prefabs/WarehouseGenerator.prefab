@@ -61,6 +61,7 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 136aad0dfb33701f88db058fcfaec318, type: 2}
   - {fileID: 2100000, guid: f11cce249332e670ca8eee2e9419372b, type: 2}
   quad: {fileID: 6923210483485356578, guid: 8fa4e36c5b374f1ffacdbf336c176e21, type: 3}
+  mainScene: {fileID: 102900000, guid: 9fc0d4010bbf28b4594072e72b8655ab, type: 3}
   seed: -1
   jobType: 1
   searchPercent: 20
@@ -77,5 +78,4 @@ MonoBehaviour:
   - 0
   - 0
   zoneSizes: 0200000001000000010000000000000000000000
-  correctlyPlacedBoxes: 
   misplacedBoxes: 0

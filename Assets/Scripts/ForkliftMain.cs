@@ -94,8 +94,8 @@ public class ForkliftMain : MonoBehaviour
             _instance = this;
         else
         {
-            Debug.LogError("There are multiple Forklifts found! Check your gameObjects, because this is a singleton!");
-            Destroy(this);
+            Debug.LogWarning("There are multiple Forklifts found! Check your gameObjects, because this is a singleton!");
+            DestroyImmediate(gameObject);
         }
     }
 
@@ -350,5 +350,18 @@ public class ForkliftMain : MonoBehaviour
             }
             SetLayerRecursively(child.gameObject, newLayer);
         }
+    }
+
+    public void Stop()
+    {
+        motorSpeed = 0.0f;
+        rotationSpeed = 0.0f;
+        forkSpeed = 0.0f;
+    }
+    
+    public void Remove()
+    {
+        _instance = null;
+        Destroy(gameObject);
     }
 }

@@ -1,8 +1,11 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Boxes;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
 /// <summary>
@@ -10,8 +13,8 @@ using Random = UnityEngine.Random;
 /// </summary>
 public enum JobType
 {
-    BoxSorting,
-    BoxSearching
+    BoxSorting = 0,
+    BoxSearching = 1
 }
 
 /// <summary>
@@ -19,6 +22,8 @@ public enum JobType
 /// </summary>
 public class WarehouseGenerator : MonoBehaviour
 {
+    private static WarehouseGenerator _instance;
+    
     [Header("References")]
     public GameObject wall;
     public GameObject cornerWall;
@@ -28,6 +33,7 @@ public class WarehouseGenerator : MonoBehaviour
     public GameObject[] boxes;
     public Material[] floorMats;
     public GameObject quad;
+    public string mainScene;
     [Header("Properties")] 
     public int seed = -1;
     public JobType jobType;
@@ -93,14 +99,51 @@ public class WarehouseGenerator : MonoBehaviour
     private readonly List<GameObject>[] _placedBoxes = new List<GameObject>[4];
     
     public readonly List<GameObject>[] JobBoxes = new List<GameObject>[4];
-    [HideInInspector]
-    public int[] correctlyPlacedBoxes = new int[4];
+    
+    public readonly List<GameObject>[] CorrectlyPlacedBoxes = new List<GameObject>[4];
     [HideInInspector]
     public int misplacedBoxes = 0;
+    [HideInInspector]
+    public bool generating = false;
     
     private void Awake()
     {
+        SceneManager.activeSceneChanged += (oldScene, newScene) =>
+        {
+            if (newScene.name != mainScene)
+                return;
+            
+            StartCoroutine(GenerateLater());
+        };
+        if (_instance == null)
+            _instance = this;
+        else
+        {
+            Debug.LogWarning("Multiple Warehouse Generators detected!");
+            DestroyImmediate(gameObject);
+        }
         DontDestroyOnLoad(this);
+        
+        for (var i = 0; i < CorrectlyPlacedBoxes.Length; i++)
+        {
+            CorrectlyPlacedBoxes[i] = new List<GameObject>();
+        }
+        
+        for (var i = 0; i < JobBoxes.Length; i++)
+        {
+            JobBoxes[i] = new List<GameObject>();
+        }
+    }
+
+    public static WarehouseGenerator GetInstance()
+    {
+        return _instance;
+    }
+    
+    private IEnumerator GenerateLater()
+    {
+        yield return new WaitForSeconds(1.0f);
+        GenerateRoom();
     }
 
     /// <summary>
@@ -116,6 +159,8 @@ public class WarehouseGenerator : MonoBehaviour
         // Prepares some basic gameObjects to use for sorting the elements making up the warehouse.
         #region Preparations
 
+        generating = true;
+        
         for (var i = 0; i < 4; i++)
         {
             if (_placedBoxes[i] != null)
@@ -284,8 +329,9 @@ public class WarehouseGenerator : MonoBehaviour
                         var rand = Mathf.RoundToInt(Random.value * 3.0f);
                         if (!(boxWeights[rand] > Random.value)) continue;
                         
-                        Instantiate(boxes[rand], new Vector3(realX - boxPosition.x, boxPosition.y, realY),
+                        var box = Instantiate(boxes[rand], new Vector3(realX - boxPosition.x, boxPosition.y, realY),
                             Quaternion.Euler(0, -90, 0), shelvesTransform);
+                        _placedBoxes[rand].Add(box);
                     }
                 }
             }
@@ -302,7 +348,7 @@ public class WarehouseGenerator : MonoBehaviour
             for (var i = 0; i < _placedBoxes.Length; i++)
             {
                 var list = _placedBoxes[i];
-                foreach (var box in list.Where(box => Mathf.FloorToInt(Random.value * 100) < searchPercent))
+                foreach (var box in list.Where(_ => Mathf.FloorToInt(Random.value * 100) < searchPercent))
                 {
                     JobBoxes[i].Add(box);
                 }
@@ -310,9 +356,35 @@ public class WarehouseGenerator : MonoBehaviour
         }
         else
         {
-            //TODO: make this
+            for (var i = 0; i < _placedBoxes.Length; i++)
+            {
+                JobBoxes[i] = _placedBoxes[i];
+            }
         }
 
+        foreach (var list in CorrectlyPlacedBoxes)
+        {
+            list.Clear();
+        }
+        
         #endregion
+
+        generating = false;
+    }
+
+    private float _lastAdd;
+    
+    public void MisplacedBox()
+    {
+        if ((Time.time - _lastAdd < 1.0f)) return;
+        
+        misplacedBoxes++;
+        _lastAdd = Time.time;
+    }
+    
+    public void Remove()
+    {
+        _instance = null;
+        Destroy(gameObject);
     }
 }

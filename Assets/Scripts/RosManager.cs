@@ -67,7 +67,7 @@ public class RosManager : MonoBehaviour
     /// This list is expanded upon at runtime, by adding the sensors to it.
     /// It's main purpose is to define what type each channel is, and allows an easy was to add more channels. 
     /// </summary>
-    private static readonly Dictionary<string, MessageInstance> RosPublishers = new()
+    private readonly Dictionary<string, MessageInstance> _rosPublishers = new()
     {
         {RosChannels.Publishers.UnityToRosTransform,  new MessageInstance(RosMessageType.Transform)},
         {RosChannels.Publishers.UnityToRosForkHeight, new MessageInstance(RosMessageType.Float32  )}
@@ -78,7 +78,7 @@ public class RosManager : MonoBehaviour
     /// It's main purpose is to define what type each channel is, and to define the callbacks using the received information.
     /// It also provides an easy way to add additional channels.
     /// </summary>
-    private static readonly Dictionary<string, MessageInstance> RosListeners = new()
+    private readonly Dictionary<string, MessageInstance> _rosListeners = new()
     {
         {RosChannels.Listeners.RosToUnityMotorSpeed, new MessageInstance(RosMessageType.Float32, msg => {
             _forklift.motorSpeed = Mathf.Clamp(((Float32Msg)msg).data, -1.0f, 1.0f);
@@ -97,8 +97,8 @@ public class RosManager : MonoBehaviour
             _instance = this;
         else
         {
-            Debug.LogError("There are multiple ROS Managers found! Check your gameObjects, because this is a singleton!");
-            Destroy(this);
+            Debug.LogWarning("There are multiple ROS Managers found! Check your gameObjects, because this is a singleton!");
+            DestroyImmediate(gameObject);
             return;
         }
 
@@ -116,12 +116,26 @@ public class RosManager : MonoBehaviour
         RosSetupListeners();
     }
 
-    private void Start()
+    public void StartServer()
     {
         if (testServer == null || !testServer.isActiveAndEnabled) return;
         
         _testMode = true;
         SetupTestServer();
+    }
+
+    public void Connect(string ip, int port)
+    {
+        _connection.RosIPAddress = ip;
+        _connection.RosPort = port;
+        _connection.Connect();
+    }
+    
+    public void Disconnect()
+    {
+        _connection.Disconnect();
+        testServer.enabled = false;
+        _forklift.Stop();
     }
 
     public static RosManager GetInstance()
@@ -133,12 +147,12 @@ public class RosManager : MonoBehaviour
 
     private void SetupTestServer()
     {
-        foreach (var publisher in RosPublishers)
+        foreach (var publisher in _rosPublishers)
         {
             testServer.Listeners[publisher.Key] = "-";
         }
 
-        foreach (var listener in RosListeners)
+        foreach (var listener in _rosListeners)
         {
             testServer.Publishers[listener.Key] = listener.Value.MessageType;
         }
@@ -146,7 +160,7 @@ public class RosManager : MonoBehaviour
 
     public void TestReceiveMessage(string channel, float value)
     {
-        var listener = RosListeners[channel];
+        var listener = _rosListeners[channel];
         if (listener == null)
         {
             Debug.LogError($"Channel with name \"{channel}\" not found.");
@@ -164,7 +178,7 @@ public class RosManager : MonoBehaviour
     
     public void TestReceiveMessage(string channel, Vector3 value)
     {
-        var listener = RosListeners[channel];
+        var listener = _rosListeners[channel];
         if (listener == null)
         {
             Debug.LogError($"Channel with name \"{channel}\" not found.");
@@ -182,7 +196,7 @@ public class RosManager : MonoBehaviour
     
     public void TestReceiveMessage(string channel, Transform value)
     {
-        var listener = RosListeners[channel];
+        var listener = _rosListeners[channel];
         if (listener == null)
         {
             Debug.LogError($"Channel with name \"{channel}\" not found.");
@@ -209,7 +223,7 @@ public class RosManager : MonoBehaviour
 
     private void RosSetupPublishers()
     {
-        foreach (var channel in RosPublishers)
+        foreach (var channel in _rosPublishers)
         {
             switch (channel.Value.MessageType)
             {
@@ -230,7 +244,7 @@ public class RosManager : MonoBehaviour
 
     private void RosSetupListeners()
     {
-        foreach (var channel in RosListeners)
+        foreach (var channel in _rosListeners)
         {
             _connection.Subscribe(channel.Key, channel.Value.ReceiveCallback);
         }
@@ -245,7 +259,7 @@ public class RosManager : MonoBehaviour
     /// <exception cref="InvalidOperationException">If type of the channel is different, than the value trying to be sent, this exception is thrown.</exception>
     public void Publish(string messageName, float value)
     {
-        var instance = RosPublishers[messageName];
+        var instance = _rosPublishers[messageName];
         if (ReferenceEquals(instance, null))
         {
             Debug.LogError($"The publisher named \"{messageName}\" was not found!");
@@ -277,7 +291,7 @@ public class RosManager : MonoBehaviour
     /// <exception cref="InvalidOperationException">If type of the channel is different, than the value trying to be sent, this exception is thrown.</exception>
     public void Publish(string messageName, Vector3 value)
     {
-        var instance = RosPublishers[messageName];
+        var instance = _rosPublishers[messageName];
         if (ReferenceEquals(instance, null))
         {
             Debug.LogError($"The publisher named \"{messageName}\" was not found!");
@@ -317,7 +331,7 @@ public class RosManager : MonoBehaviour
     /// <exception cref="InvalidOperationException">If type of the channel is different, than the value trying to be sent, this exception is thrown.</exception>
     public void Publish(string messageName, Transform value)
     {
-        var instance = RosPublishers[messageName];
+        var instance = _rosPublishers[messageName];
         if (ReferenceEquals(instance, null))
         {
             Debug.LogError($"The publisher named \"{messageName}\" was not found!");
@@ -364,15 +378,21 @@ public class RosManager : MonoBehaviour
         switch (sensor.type)
         {
             case SensorType.Distance:
-                RosPublishers.Add("sensor" + id, new MessageInstance(RosMessageType.Float32));
+                _rosPublishers.Add("sensor" + id, new MessageInstance(RosMessageType.Float32));
                 _connection.RegisterPublisher<Float32Msg>("sensor" + id);
                 break;
             case SensorType.Color:
-                RosPublishers.Add("sensor" + id, new MessageInstance(RosMessageType.Vector3));
+                _rosPublishers.Add("sensor" + id, new MessageInstance(RosMessageType.Vector3));
                 _connection.RegisterPublisher<Vector3Msg>("sensor" + id);
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
         }
+    }
+
+    public void Remove()
+    {
+        _instance = null;
+        Destroy(gameObject);
     }
 }
