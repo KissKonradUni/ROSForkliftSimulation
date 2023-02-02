@@ -2,8 +2,8 @@ using System;
 using System.Collections;
 using System.Linq;
 using TMPro;
-using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour
 {
@@ -17,6 +17,7 @@ public class UIManager : MonoBehaviour
     public GameObject gameEndMenu;
     public TMP_Text statNumbersText;
     public TMP_Text statScoresText;
+    public string mainMenuScene = "MainMenu";
     
     [Header("Singletons")]
     public ForkliftMain forklift;
@@ -67,6 +68,9 @@ public class UIManager : MonoBehaviour
         if (!_started)
             return;
 
+        if (Input.GetKeyDown(KeyCode.Escape))
+            BackToMainMenu();
+        
         if (Math.Abs(_start - (-1.0f)) < 0.01f)
             _start = Time.time;
         
@@ -131,15 +135,6 @@ public class UIManager : MonoBehaviour
 
     public void BackToMainMenu()
     {
-        if (Application.isEditor)
-        {
-#if UNITY_EDITOR
-            EditorApplication.ExitPlaymode();
-#endif
-        }
-        else
-        {
-            Application.Quit();
-        }
+        SceneManager.LoadScene(mainMenuScene);
     }
 }

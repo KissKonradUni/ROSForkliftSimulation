@@ -28,6 +28,7 @@ public class MainMenuManager : MonoBehaviour
 
     public void StartGame()
     {
+        blackout = Blackout.GetInstance().GetComponentInChildren<Animator>();
         StartCoroutine(LateStartGame());
     }
 
