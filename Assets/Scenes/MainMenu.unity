@@ -11755,6 +11755,80 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1102132962}
   m_CullTransparentMesh: 1
+--- !u!1 &1102395189
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1102395191}
+  - component: {fileID: 1102395190}
+  m_Layer: 0
+  m_Name: TemplateManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1102395190
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1102395189}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4384fdfcd27f45a28fe15d42236a59d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  seedIf: {fileID: 1485077177}
+  jobTypeDd: {fileID: 2008998655}
+  completionRequirementIf: {fileID: 1869040443}
+  timeLimitIf:
+  - {fileID: 1744535836}
+  - {fileID: 1122874507}
+  - {fileID: 218644150}
+  warehouseSizeIf:
+  - {fileID: 719961217}
+  - {fileID: 1152066776}
+  shelfCountIf:
+  - {fileID: 617513700}
+  - {fileID: 1438183509}
+  shelfDistanceTx: {fileID: 1719353959}
+  boxTypeTg:
+  - {fileID: 1847453187}
+  - {fileID: 624194883}
+  - {fileID: 1875980948}
+  - {fileID: 1895736081}
+  boxWeightIf:
+  - {fileID: 11535002}
+  - {fileID: 716877393}
+  - {fileID: 1462881466}
+  - {fileID: 1164151356}
+  zoneSizeIf:
+  - {fileID: 871411138}
+  - {fileID: 835173586}
+  - {fileID: 953995011}
+  - {fileID: 1123467018}
+  - {fileID: 563341896}
+--- !u!4 &1102395191
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1102395189}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1108314869
 GameObject:
   m_ObjectHideFlags: 0
@@ -24596,5 +24670,5 @@ MonoBehaviour:
   highscoreMenu: {fileID: 297601731}
   highscoreNames: {fileID: 1596265782}
   highscoreScores: {fileID: 1991749489}
-  blackout: {fileID: 993154301}
+  blackout: {fileID: 0}
   mainScene: MainScene

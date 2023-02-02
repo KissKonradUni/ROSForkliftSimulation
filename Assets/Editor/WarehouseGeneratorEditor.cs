@@ -13,7 +13,7 @@ public class WarehouseGeneratorEditor : Editor
     
     public override void OnInspectorGUI()
     {
-        if (!_foundInstance)
+        /*if (!_foundInstance)
         {
             _warehouseGenerator = (WarehouseGenerator)target;
             _foundInstance = true;
@@ -77,7 +77,12 @@ public class WarehouseGeneratorEditor : Editor
             serializedObject.ApplyModifiedProperties();
         }
 
-        EditorGUILayout.Space(10.0f);
+        EditorGUILayout.Space(10.0f);*/
+        
+        base.OnInspectorGUI();
+        
+        EditorGUILayout.LabelField("");
+        EditorGUILayout.LabelField("Settings are static and must be set from code.");
 
         if (GUILayout.Button("Generate"))
         {
