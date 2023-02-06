@@ -5121,7 +5121,7 @@ GameObject:
   - component: {fileID: 469237418}
   - component: {fileID: 469237417}
   m_Layer: 5
-  m_Name: JobTypeDropdown
+  m_Name: TemplateDropdown
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7010,6 +7010,18 @@ MonoBehaviour:
         m_Arguments:
           m_ObjectArgument: {fileID: 624194883}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.UI.Toggle, UnityEngine.UI
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 2144227775}
+        m_TargetAssemblyTypeName: MainMenuManager, Assembly-CSharp
+        m_MethodName: SetWeightGreen
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 716877393}
+          m_ObjectArgumentAssemblyTypeName: TMPro.TMP_InputField, Unity.TextMeshPro
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -15148,7 +15160,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1379820984}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1102395190}
+        m_TargetAssemblyTypeName: TemplateManager, Assembly-CSharp
+        m_MethodName: SetTemplate
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 469237417}
+          m_ObjectArgumentAssemblyTypeName: TMPro.TMP_Dropdown, Unity.TextMeshPro
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1379820984
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15960,6 +15984,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 248ddcc9c606ac7e3884272eb604103d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  usernameText: {fileID: 1902720199}
+  manualControlToggle: {fileID: 623767792}
+  ipText: {fileID: 1717996397}
+  portText: {fileID: 938297348}
 --- !u!1 &1455449413
 GameObject:
   m_ObjectHideFlags: 0
@@ -20812,6 +20840,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 2144227775}
+        m_TargetAssemblyTypeName: MainMenuManager, Assembly-CSharp
+        m_MethodName: SetWeightBlue
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 11535002}
+          m_ObjectArgumentAssemblyTypeName: TMPro.TMP_InputField, Unity.TextMeshPro
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_IsOn: 1
 --- !u!1 &1851331103
 GameObject:
@@ -21396,6 +21436,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 2144227775}
+        m_TargetAssemblyTypeName: MainMenuManager, Assembly-CSharp
+        m_MethodName: SetWeightYellow
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 1462881466}
+          m_ObjectArgumentAssemblyTypeName: TMPro.TMP_InputField, Unity.TextMeshPro
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_IsOn: 0
 --- !u!1 &1880289735
 GameObject:
@@ -21543,6 +21595,18 @@ MonoBehaviour:
         m_Arguments:
           m_ObjectArgument: {fileID: 1895736081}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.UI.Toggle, UnityEngine.UI
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 2144227775}
+        m_TargetAssemblyTypeName: MainMenuManager, Assembly-CSharp
+        m_MethodName: SetWeightRed
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 1164151356}
+          m_ObjectArgumentAssemblyTypeName: TMPro.TMP_InputField, Unity.TextMeshPro
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -24122,7 +24186,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Complition requirement (Fetch):'
+  m_text: 'Completion requirement (Fetch):'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 96527fe4a7baaab7bbb7d88a7c94560f, type: 2}
   m_sharedMaterial: {fileID: 8670932348796993580, guid: 96527fe4a7baaab7bbb7d88a7c94560f, type: 2}

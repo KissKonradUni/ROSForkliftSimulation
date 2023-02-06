@@ -112,7 +112,7 @@ public class WarehouseGeneratorEditor : Editor
         if (zoneSum < WarehouseGenerator.ShelfRows)
             result += "WARNING: Not all rows are used by zones! Consider increasing the mixed zone's size.\n";
         
-        if (WarehouseGenerator.JobType == JobType.BoxSearching)
+        if (WarehouseGenerator.JobType == JobType.BoxFetching)
         {
             if (WarehouseGenerator.ZoneSizes[0] < zoneCount)
                 result += "WARNING: There may be more boxes to search for, than what is able to fit in the mixed zone!\n";

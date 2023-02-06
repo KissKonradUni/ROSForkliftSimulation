@@ -34,6 +34,8 @@ public class UIManager : MonoBehaviour
         StartCoroutine(LateStart());
         
         gameEndMenu.SetActive(false);
+        
+        StaticGameManager.Start();
     }
 
     private IEnumerator LateStart()
@@ -45,7 +47,7 @@ public class UIManager : MonoBehaviour
         statsTitleText.text = 
             "Time limit:\n" +
             "Job type:\n" +
-            $"{(WarehouseGenerator.JobType == JobType.BoxSearching ? "Fetch:" : "Sort:")}\n" +
+            $"{(WarehouseGenerator.JobType == JobType.BoxFetching ? "Fetch:" : "Sort:")}\n" +
             "Box count:\n" +
             "Misplaced:\n" +
             "Trip length:";
@@ -84,7 +86,7 @@ public class UIManager : MonoBehaviour
 
         statsText.text =
             $"{WarehouseGenerator.TimeLimit.x:00}:{WarehouseGenerator.TimeLimit.y:00}:{WarehouseGenerator.TimeLimit.z:00}\n" +
-            $"{(WarehouseGenerator.JobType == JobType.BoxSearching ? "Fetch" : "Sort")}\n" +
+            $"{(WarehouseGenerator.JobType == JobType.BoxFetching ? "Fetch" : "Sort")}\n" +
             $"{WarehouseGenerator.JobBoxes[0].Count}<color=#88f>B<color=white> {WarehouseGenerator.JobBoxes[1].Count}<color=#8f8>G<color=white> {WarehouseGenerator.JobBoxes[2].Count}<color=#ff4>Y<color=white> {WarehouseGenerator.JobBoxes[3].Count}<color=#f88>R<color=white>\n" +
             $"{correctlyPlacedCount} / {_boxCount}\n" +
             $"{WarehouseGenerator.MisplacedBoxes}\n" +
@@ -129,6 +131,9 @@ public class UIManager : MonoBehaviour
         HighscoreManager.Load();
         HighscoreManager.Highscores.Add(new Score(StaticGameManager.Username, Mathf.RoundToInt(score)));
         HighscoreManager.Save();
+        
+        Cursor.lockState = CursorLockMode.Confined;
+        Cursor.visible = true;
         
         gameEndMenu.SetActive(true);
     }

@@ -51,7 +51,7 @@ public class ShelfZone : MonoBehaviour
     {
         if (_warehouseGenerator.generating) return;
         
-        if (WarehouseGenerator.JobType != JobType.BoxSearching) return;
+        if (WarehouseGenerator.JobType != JobType.BoxFetching) return;
 
         if (WarehouseGenerator.JobBoxes[(int)box.boxType].Count >
             WarehouseGenerator.CorrectlyPlacedBoxes[(int)box.boxType].Count)

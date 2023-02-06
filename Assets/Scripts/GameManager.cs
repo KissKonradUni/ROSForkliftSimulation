@@ -1,9 +1,23 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
+    public TMP_Text usernameText;
+    public Toggle manualControlToggle;
+    public TMP_InputField ipText;
+    public TMP_InputField portText;
+
+    private void Start()
+    {
+        usernameText.text = StaticGameManager.Username;
+        manualControlToggle.isOn = StaticGameManager.UseManualControls;
+        ipText.text = StaticGameManager.IP;
+        portText.text = StaticGameManager.Port.ToString();
+    }
+
     public void SetManualControls(Toggle input)
     {
         StaticGameManager.UseManualControls = input.isOn;

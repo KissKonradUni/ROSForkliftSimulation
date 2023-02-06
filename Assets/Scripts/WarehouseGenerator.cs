@@ -12,7 +12,7 @@ using Random = UnityEngine.Random;
 public enum JobType
 {
     BoxSorting = 0,
-    BoxSearching = 1
+    BoxFetching = 1
 }
 
 /// <summary>
@@ -33,7 +33,7 @@ public class WarehouseGenerator : MonoBehaviour
     public GameObject quad;
     [Header("Properties")] 
     public static int Seed = -1;
-    public static JobType JobType = JobType.BoxSearching;
+    public static JobType JobType = JobType.BoxFetching;
     [Range(20, 100)]
     public static int SearchPercent = 50;
     public static Vector3 TimeLimit = new(0.0f, 15.0f, 0.0f);
@@ -300,7 +300,7 @@ public class WarehouseGenerator : MonoBehaviour
                 
                 indX++;
 
-                if (JobType == JobType.BoxSearching)
+                if (JobType == JobType.BoxFetching)
                 {
                     if (colors[indY] == 0)
                         continue;
@@ -339,7 +339,7 @@ public class WarehouseGenerator : MonoBehaviour
 
         #region Job
 
-        if (JobType == JobType.BoxSearching)
+        if (JobType == JobType.BoxFetching)
         {
             for (var i = 0; i < PlacedBoxes.Length; i++)
             {

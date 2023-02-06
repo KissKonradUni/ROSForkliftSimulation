@@ -56,8 +56,8 @@ public class MainMenuManager : MonoBehaviour
         HighscoreManager.Load();
         HighscoreManager.Highscores.Sort((a, b) => a.points.CompareTo(b.points));
         HighscoreManager.Highscores.Reverse();
-        var names  = HighscoreManager.Highscores.Aggregate("", (current, highscore) => current + $"{highscore.name}\n"  );
-        var scores = HighscoreManager.Highscores.Aggregate("", (current, highscore) => current + $"{highscore.points}\n");
+        var names  = HighscoreManager.Highscores.Take(10).Aggregate("", (current, highscore) => current + $"{highscore.name}\n"  );
+        var scores = HighscoreManager.Highscores.Take(10).Aggregate("", (current, highscore) => current + $"{highscore.points}\n");
         highscoreNames.text  = names ;
         highscoreScores.text = scores;
         

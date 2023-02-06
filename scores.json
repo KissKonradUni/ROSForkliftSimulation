@@ -2,59 +2,7 @@
     "items": [
         {
             "name": "Player",
-            "points": 18
-        },
-        {
-            "name": "Player",
-            "points": 58
-        },
-        {
-            "name": "Player",
-            "points": 40
-        },
-        {
-            "name": "Player",
-            "points": 11
-        },
-        {
-            "name": "Konrad",
-            "points": 11
-        },
-        {
-            "name": "",
-            "points": 27
-        },
-        {
-            "name": "",
-            "points": 26
-        },
-        {
-            "name": "Konráád",
-            "points": 24
-        },
-        {
-            "name": "",
-            "points": 18
-        },
-        {
-            "name": "",
-            "points": 20
-        },
-        {
-            "name": "",
-            "points": 20
-        },
-        {
-            "name": "",
-            "points": 22
-        },
-        {
-            "name": "",
-            "points": 22
-        },
-        {
-            "name": "",
-            "points": 24
+            "points": 25
         }
     ]
 }

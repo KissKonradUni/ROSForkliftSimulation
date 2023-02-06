@@ -3,10 +3,10 @@ using UnityEngine;
 public static class StaticGameManager
 {
     [Header("Settings")]
-    public static bool UseManualControls;
-    public static string IP;
-    public static int Port;
-    public static string Username;
+    public static bool UseManualControls = true;
+    public static string IP = "127.0.0.1";
+    public static int Port = 80;
+    public static string Username = "Player";
     
     public static void Start()
     {
