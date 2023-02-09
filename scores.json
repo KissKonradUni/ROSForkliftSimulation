@@ -3,6 +3,14 @@
         {
             "name": "Player",
             "points": 25
+        },
+        {
+            "name": "Player",
+            "points": 21
+        },
+        {
+            "name": "Player",
+            "points": 19
         }
     ]
 }

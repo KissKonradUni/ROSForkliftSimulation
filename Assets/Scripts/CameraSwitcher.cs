@@ -1,12 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
 using Cinemachine;
 using UnityEngine;
 
 public class CameraSwitcher : MonoBehaviour
 {
     public CinemachineVirtualCamera mainCamera;
-    public CinemachineFreeLook freeCamera;
+    public CinemachineFreeLook      freeCamera;
 
     private bool _isFreeCamera = false;
     
@@ -19,8 +17,5 @@ public class CameraSwitcher : MonoBehaviour
         
         freeCamera.Priority = _isFreeCamera ? 10 : 0;
         mainCamera.Priority = _isFreeCamera ? 0 : 10;
-
-        Cursor.lockState = _isFreeCamera ? CursorLockMode.Locked : CursorLockMode.Confined;
-        Cursor.visible = _isFreeCamera;
     }
 }
