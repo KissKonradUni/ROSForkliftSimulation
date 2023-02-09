@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Boxes;
 using UnityEngine;
 
@@ -44,6 +45,10 @@ public class ShelfZone : MonoBehaviour
     {
         if (_warehouseGenerator.generating) return;
         
+        if (WarehouseGenerator.JobBoxes[(int)box.boxType].Count == WarehouseGenerator.CorrectlyPlacedBoxes[(int)box.boxType].Count) return;
+        
+        if (WarehouseGenerator.CorrectlyPlacedBoxes.Select(boxes => boxes.Count).Sum() == WarehouseGenerator.JobBoxes.Select(boxes => boxes.Count).Sum()) return;
+
         _warehouseGenerator.MisplacedBox();
     }
     
@@ -61,6 +66,10 @@ public class ShelfZone : MonoBehaviour
         }
         else
         {
+            if (WarehouseGenerator.JobBoxes[(int)box.boxType].Count == WarehouseGenerator.CorrectlyPlacedBoxes[(int)box.boxType].Count) return;
+        
+            if (WarehouseGenerator.CorrectlyPlacedBoxes.Select(boxes => boxes.Count).Sum() == WarehouseGenerator.JobBoxes.Select(boxes => boxes.Count).Sum()) return;
+            
             _warehouseGenerator.MisplacedBox();
         }
     }
