@@ -240,7 +240,20 @@ public class RosManager : MonoBehaviour
     {
         foreach (var channel in _rosListeners)
         {
-            _connection.Subscribe(channel.Key, channel.Value.ReceiveCallback);
+            switch (channel.Value.MessageType)
+            {
+                case RosMessageType.Float32:
+                    _connection.Subscribe<Float32Msg>(channel.Key, channel.Value.ReceiveCallback);
+                    break;
+                case RosMessageType.Vector3:
+                    _connection.Subscribe<Vector3Msg>(channel.Key, channel.Value.ReceiveCallback);
+                    break;
+                case RosMessageType.Transform:
+                    _connection.Subscribe<TransformMsg>(channel.Key, channel.Value.ReceiveCallback);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
     }
     
