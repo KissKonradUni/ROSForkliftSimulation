@@ -54,17 +54,17 @@ public class RosManager : MonoBehaviour
     private ROSConnection _connection;
 
     public RosTestServer testServer;
-    private bool _testMode;
+    private bool _testMode = false;
     
     /// <summary>
     /// The main dictionary that lists the Publishers going form the unity ros server to the real one.
     /// This list is expanded upon at runtime, by adding the sensors to it.
     /// It's main purpose is to define what type each channel is, and allows an easy was to add more channels. 
     /// </summary>
-    private readonly Dictionary<string, MessageInstance> _rosPublishers = new()
+    private readonly Dictionary<string, BaseMessageType> _rosPublishers = new()
     {
-        {RosChannels.Publishers.UnityToRosTransform,  new MessageInstance(RosMessageType.Transform)},
-        {RosChannels.Publishers.UnityToRosForkHeight, new MessageInstance(RosMessageType.Float32  )}
+        {RosChannels.Publishers.UnityToRosTransform,  new MessageInstance<TransformMsg>(RosMessageType.Transform)},
+        {RosChannels.Publishers.UnityToRosForkHeight, new MessageInstance<Float32Msg>  (RosMessageType.Float32  )}
     };
     
     /// <summary>
@@ -72,16 +72,16 @@ public class RosManager : MonoBehaviour
     /// It's main purpose is to define what type each channel is, and to define the callbacks using the received information.
     /// It also provides an easy way to add additional channels.
     /// </summary>
-    private readonly Dictionary<string, MessageInstance> _rosListeners = new()
+    private readonly Dictionary<string, BaseMessageType> _rosListeners = new()
     {
-        {RosChannels.Listeners.RosToUnityMotorSpeed, new MessageInstance(RosMessageType.Float32, msg => {
-            _forklift.motorSpeed = Mathf.Clamp(((Float32Msg)msg).data, -1.0f, 1.0f);
+        {RosChannels.Listeners.RosToUnityMotorSpeed, new MessageInstance<Float32Msg>(RosMessageType.Float32, msg => {
+            _forklift.motorSpeed = Mathf.Clamp(msg.data, -1.0f, 1.0f);
         })},
-        {RosChannels.Listeners.RosToUnityRotationSpeed, new MessageInstance(RosMessageType.Float32, msg => {
-            _forklift.rotationSpeed = Mathf.Clamp(((Float32Msg)msg).data, -1.0f, 1.0f);
+        {RosChannels.Listeners.RosToUnityRotationSpeed, new MessageInstance<Float32Msg>(RosMessageType.Float32, msg => {
+            _forklift.rotationSpeed = Mathf.Clamp(msg.data, -1.0f, 1.0f);
         })},
-        {RosChannels.Listeners.RosToUnityForkSpeed, new MessageInstance(RosMessageType.Float32, msg => {
-            _forklift.forkSpeed = Mathf.Clamp(((Float32Msg)msg).data, -1.0f, 1.0f);
+        {RosChannels.Listeners.RosToUnityForkSpeed, new MessageInstance<Float32Msg>(RosMessageType.Float32, msg => {
+            _forklift.forkSpeed = Mathf.Clamp(msg.data, -1.0f, 1.0f);
         })},
     };
 
@@ -110,12 +110,17 @@ public class RosManager : MonoBehaviour
         RosSetupListeners();
     }
 
-    public void StartServer()
+    public void StartServer(bool useManualControls)
     {
-        if (testServer == null || !testServer.isActiveAndEnabled) return;
-        
-        _testMode = true;
-        SetupTestServer();
+        if (testServer == null || !testServer.isActiveAndEnabled)
+        {
+            
+        }
+        else
+        {
+            _testMode = useManualControls;
+            SetupTestServer();
+        }
     }
 
     public void Connect(string ip, int port)
@@ -167,7 +172,7 @@ public class RosManager : MonoBehaviour
             return;
         }
 
-        listener.ReceiveCallback(new Float32Msg(value));
+        ((MessageInstance<Float32Msg>)listener).ReceiveCallback(new Float32Msg(value));
     }
     
     public void TestReceiveMessage(string channel, Vector3 value)
@@ -185,7 +190,7 @@ public class RosManager : MonoBehaviour
             return;
         }
 
-        listener.ReceiveCallback(new Vector3Msg(value.x, value.y, value.z));
+        ((MessageInstance<Vector3Msg>)listener).ReceiveCallback(new Vector3Msg(value.x, value.y, value.z));
     }
     
     public void TestReceiveMessage(string channel, Transform value)
@@ -205,7 +210,7 @@ public class RosManager : MonoBehaviour
 
         var position = value.position;
         var rotation = value.rotation;
-        listener.ReceiveCallback(new TransformMsg(
+        ((MessageInstance<TransformMsg>)listener).ReceiveCallback(new TransformMsg(
             new Vector3Msg(position.x, position.y, position.z), 
             new QuaternionMsg(rotation.x, rotation.y, rotation.z, rotation.w)
         ));
@@ -243,13 +248,13 @@ public class RosManager : MonoBehaviour
             switch (channel.Value.MessageType)
             {
                 case RosMessageType.Float32:
-                    _connection.Subscribe<Float32Msg>(channel.Key, channel.Value.ReceiveCallback);
+                    _connection.Subscribe<Float32Msg>(channel.Key, ((MessageInstance<Float32Msg>)channel.Value).ReceiveCallback);
                     break;
                 case RosMessageType.Vector3:
-                    _connection.Subscribe<Vector3Msg>(channel.Key, channel.Value.ReceiveCallback);
+                    _connection.Subscribe<Vector3Msg>(channel.Key, ((MessageInstance<Vector3Msg>)channel.Value).ReceiveCallback);
                     break;
                 case RosMessageType.Transform:
-                    _connection.Subscribe<TransformMsg>(channel.Key, channel.Value.ReceiveCallback);
+                    _connection.Subscribe<TransformMsg>(channel.Key, ((MessageInstance<TransformMsg>)channel.Value).ReceiveCallback);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -280,10 +285,11 @@ public class RosManager : MonoBehaviour
                 testServer.Listeners[messageName] = value.ToString("F3", CultureInfo.CurrentCulture);
                 return;
             }
-            
-            var msg = instance.Message;
-            ((Float32Msg)msg).data = value;
-            _connection.Publish(messageName, instance.Message);
+
+            var inst = (MessageInstance<Float32Msg>)instance; 
+            var msg = inst.Message;
+            msg.data = value;
+            _connection.Publish(messageName, msg);
         }
         else
             throw new InvalidOperationException();
@@ -317,12 +323,12 @@ public class RosManager : MonoBehaviour
                 return;
             }
             
-            var msg = instance.Message;
-            var vector3Msg = ((Vector3Msg)msg);
+            var inst = (MessageInstance<Vector3Msg>)instance; 
+            var vector3Msg = inst.Message;
             vector3Msg.x = value.x;
             vector3Msg.y = value.y;
             vector3Msg.z = value.z;
-            _connection.Publish(messageName, instance.Message);
+            _connection.Publish(messageName, vector3Msg);
         }
         else
             throw new InvalidOperationException();
@@ -353,8 +359,8 @@ public class RosManager : MonoBehaviour
                 return;
             }
             
-            var msg = instance.Message;
-            var transformMsg = ((TransformMsg)msg);
+            var inst = (MessageInstance<TransformMsg>)instance; 
+            var transformMsg = inst.Message;
             var position = value.position;
             var rotation = value.rotation;
             transformMsg.translation.x = position.x;
@@ -364,7 +370,7 @@ public class RosManager : MonoBehaviour
             transformMsg.rotation.y = rotation.y;
             transformMsg.rotation.z = rotation.z;
             transformMsg.rotation.w = rotation.w;
-            _connection.Publish(messageName, instance.Message);
+            _connection.Publish(messageName, transformMsg);
         }
         else
             throw new InvalidOperationException();
@@ -385,11 +391,11 @@ public class RosManager : MonoBehaviour
         switch (sensor.type)
         {
             case SensorType.Distance:
-                _rosPublishers.Add("sensor" + id, new MessageInstance(RosMessageType.Float32));
+                _rosPublishers.Add("sensor" + id, new MessageInstance<Float32Msg>(RosMessageType.Float32));
                 _connection.RegisterPublisher<Float32Msg>("sensor" + id);
                 break;
             case SensorType.Color:
-                _rosPublishers.Add("sensor" + id, new MessageInstance(RosMessageType.Vector3));
+                _rosPublishers.Add("sensor" + id, new MessageInstance<Vector3Msg>(RosMessageType.Vector3));
                 _connection.RegisterPublisher<Vector3Msg>("sensor" + id);
                 break;
             default:

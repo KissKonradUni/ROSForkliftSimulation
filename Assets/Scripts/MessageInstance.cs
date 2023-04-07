@@ -3,22 +3,24 @@ using RosMessageTypes.Geometry;
 using RosMessageTypes.Std;
 using Unity.Robotics.ROSTCPConnector.MessageGeneration;
 
-public class MessageInstance
+public class BaseMessageType
 {
     public readonly RosMessageType MessageType;
-    public readonly Message Message;
-    public readonly Action<Message> ReceiveCallback;
 
-    public MessageInstance(RosMessageType type, Action<Message> receiveCallback = null)
+    protected BaseMessageType(RosMessageType type)
     {
         MessageType = type;
-        Message = type switch
-        {
-            RosMessageType.Float32   => new Float32Msg(),
-            RosMessageType.Vector3   => new Vector3Msg(),
-            RosMessageType.Transform => new TransformMsg(),
-            _ => null
-        };
+    }
+}
+
+public class MessageInstance<T> : BaseMessageType where T : new()
+{
+    public readonly T Message;
+    public readonly Action<T> ReceiveCallback;
+
+    public MessageInstance(RosMessageType type, Action<T> receiveCallback = null) : base(type)
+    {
+        Message = new T();
         ReceiveCallback = receiveCallback;
     }
 }

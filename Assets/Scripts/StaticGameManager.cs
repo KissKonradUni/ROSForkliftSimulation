@@ -11,11 +11,11 @@ public static class StaticGameManager
     public static void Start()
     {
         var manager = RosManager.GetInstance();
-        manager.StartServer();
+        manager.testServer.enabled = false;
+        manager.StartServer(UseManualControls);
         
         if (UseManualControls) return;
         manager.testServer.manualDriving = UseManualControls;
-        manager.testServer.enabled = false;
         manager.Connect(IP, Port);
     }
 }
